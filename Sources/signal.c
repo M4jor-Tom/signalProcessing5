@@ -1,0 +1,347 @@
+#define PI 3.14156
+
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "signal.h"
+
+double argument(Complexe v)
+{
+	return atan(-v.imaginaire / v.reel);
+}
+
+double raison(Complexe v)
+{
+	return sqrt((v.reel * v.reel) + (v.imaginaire * v.imaginaire));
+}
+
+unsigned int biggestSmallerBits(unsigned int max)
+{
+	unsigned int ret = 1, i = 1;
+	
+	while(pow(2, i) < (double)max + 0.5)
+	{
+		ret = pow(2, i++);
+	}
+	
+	return ret;
+}
+
+Complexe somme2(Complexe a, Complexe b)
+{
+	Complexe ret;
+	
+	ret.reel = a.reel + b.reel;
+	ret.imaginaire = a.imaginaire + b.imaginaire;
+	
+	return ret;
+}
+
+Complexe sommeT(Complexe *valeurs, int taille)
+{
+	Complexe ret;
+	memset(&ret, 0.0, sizeof(Complexe));
+	
+	int i;
+	for(i = 0; i < taille; i++)
+	{
+		ret.reel += valeurs[i].reel;
+		ret.imaginaire += valeurs[i].imaginaire;
+	}
+	
+	return ret;
+}
+
+Complexe soustraction2(Complexe a, Complexe b)
+{
+	Complexe ret;
+	
+	ret.reel = a.reel - b.reel;
+	ret.imaginaire = a.imaginaire - b.imaginaire;
+	
+	return ret;
+}
+
+Complexe produit2(Complexe a, Complexe b)
+{
+	Complexe ret;
+	
+	ret.reel = a.reel * b.reel;
+	ret.imaginaire = a.imaginaire * b.imaginaire;
+	
+	return ret;
+}
+
+Complexe produitT(Complexe *valeurs, int taille)
+{
+	Complexe ret;
+	memset(&ret, 1.0, sizeof(Complexe));
+	
+	int i;
+	for(i = 0; i < taille; i++)
+	{
+		ret.reel *= valeurs[i].reel;
+		ret.imaginaire *= valeurs[i].imaginaire;
+	}
+	
+	return ret;
+}
+
+Complexe **produitMat(Complexe **a, unsigned int Ha, unsigned int La, Complexe **b, unsigned int Hb, unsigned int Lb)
+{
+	int H, L, prodLH;
+	Complexe **ret = NULL;
+	if(Hb == La)
+	{
+		//Operer si les matrices ont des dimensions propices au produit
+		printf("<produitMat> execute\n");
+		//Allocation de la mémoire à la valeur de return
+		ret = malloc(sizeof(Complexe *) * Ha);
+		printf("<produitMat> malloc inter okay\n");
+		for(H = 0; H < Ha; H++)
+			//Pour chaque ligne de la matrice a, allouer la mémoire
+			ret[H] = malloc(sizeof(Complexe) * Lb);
+		printf("<produitMat> malloc okay\n");
+		
+		for(L = 0; L < Lb; L++)
+		{
+			//Pour chaque colonne de la matrice b
+			for(H = 0; H < Ha; H++)
+			{
+				printf("<produitMat> loop %d;%d\n", L, H);
+				//Pour chaque ligne de la matrice a
+				//Calculer les produits avant la somme
+				
+				Complexe somme = 
+				{
+					.reel = 0,
+					.imaginaire = 0
+				};
+				for(prodLH = 0; prodLH < Hb && prodLH < La; prodLH++)
+				{
+					printf("<produitMat> print okay\n", L, H);
+					somme =
+						somme2(
+							somme,
+							produit2(
+								a[prodLH][Ha],
+								b[Lb][prodLH]
+							)
+						);
+				}
+				ret[H][L] = somme;
+			}
+		}
+	}
+	else
+		printf("<produitMat> Erreur: Matrices de mauvaises dimensions (%u(Hb) != %u(La))\n", Hb, La);
+		
+	return ret;
+}
+
+Complexe W(float kn, int N, int inverse)
+{
+	float exposant = -2.0 * kn * (float)PI / (float)N;
+	
+	if(inverse)
+		exposant = - exposant;
+	
+	Complexe w;
+	w.reel = cos(exposant);
+	w.imaginaire = sin(exposant);
+	
+	return w;
+}
+
+Complexe *DN(int N, int *nb)
+{
+	*nb = (N / 2) - 1;
+	Complexe *wN = malloc(sizeof(Complexe) * *nb);
+	
+	int i;
+	for(i = 0; i < *nb; i++)
+	{
+		wN[i] = W((float)i, N, 0);
+	}
+	
+	return wN;
+}
+
+Complexe **TN(int N, int inverse)
+{
+	Complexe **headers = malloc(sizeof(Complexe *) * N);
+	
+	int k;
+	for(k = 0; k < N; k++)
+	{
+		int n;
+		headers[k] = malloc(sizeof(Complexe) * N);
+		for(n = 0; n < N; n++)
+		{
+			headers[k][n] = W(k * n, N, inverse);
+		}
+	}
+	
+	return headers;
+}
+
+void printComplexe(Complexe valeur)
+{
+	printf(
+		"%.2f %s%.2f * i",
+		valeur.reel,
+		valeur.imaginaire >= 0.0 ? "+" : "",
+		valeur.imaginaire
+	);
+}
+
+void printTN(Complexe **Tn, int taille)
+{
+	int i, j;
+	for(i = 0; i < taille; i++)
+		for(j = 0; j < taille; j++)
+		{
+			printf("TN[k = %d;n = %d] = ", i, j);
+			printComplexe(Tn[i][j]);
+			printf("\n");
+		}
+}
+
+Complexe **xN_vers_xpxi(Complexe *xN, int N)
+{
+	int
+		n = 0,
+		nxp = 0,
+		nxi = 0;
+		
+	Complexe
+		*xp = malloc(sizeof(Complexe) * N / 2),
+		*xi = malloc(sizeof(Complexe) * N / 2),
+		**xpxi = malloc(sizeof(Complexe *) * 2);
+		
+	xpxi[0] = xp;
+	xpxi[1] = xi;
+	
+	//les xp (paires de xn => nxp valeurs) et ni (impaires de xn => nxi valeurs) nxp = nxi = N / 2
+	for(n = 0; n < N; n++)
+		if(n % 2)
+			xp[nxp++] = xN[n];
+		else
+			xi[nxi++] = xN[n];
+			
+	return xpxi;
+}
+
+Complexe **xN_vers_XLXH(Complexe *xN, int N, int inverse)
+{
+	//Allocation de la RAM
+	int
+		n = 0,
+		k = 0,
+		i = 0,
+		j = 0,
+		tailleDN = 0;
+	Complexe
+		*Dn = DN(N, &tailleDN),
+		**DnMat = malloc(sizeof(Complexe *) * tailleDN),
+		**TnDemi = TN(N, inverse),
+		**TnDemiParxp = NULL,
+		*XL = malloc(sizeof(Complexe) * tailleDN),
+		*XH = malloc(sizeof(Complexe) * tailleDN),
+		**XLXH = malloc(sizeof(Complexe *) * 2),
+		*xp = NULL,
+		*xi = NULL,
+		**xpxi = NULL;
+	for(i = 0; i < tailleDN; i++)
+	{
+		//On met Dn sous forme Complexe ** pour pouvoir faire un produi matriciel
+		DnMat[i] = malloc(sizeof(Complexe) * tailleDN);
+		
+		//On met toutes les valeurs de la matrice à 0
+		//memset(&DnMat[i], 0, sizeof(Complexe) * tailleDN);
+		for(j = 0; j < tailleDN; j++)
+		{
+			DnMat[i][j].imaginaire = 0.0;
+			DnMat[i][j].reel = 0.0;
+		}
+		
+		//On place les valeurs de DN
+		//printf("D%d = ", i); printComplexe(Dn[i]); printf("\n");
+		DnMat[i][i] = Dn[i];
+	}
+	
+	XLXH[0] = XL;
+	XLXH[1] = XH;
+	
+	xpxi = xN_vers_xpxi(xN, N);
+	xp = xpxi[0];
+	xi = xpxi[1];
+	
+	Complexe 
+		**xiMat = malloc(sizeof(Complexe *) * tailleDN),
+		**xpMat = malloc(sizeof(Complexe *) * tailleDN);
+	
+	for(i = 0; i < tailleDN; i++)
+	{
+		xiMat[i] = malloc(sizeof(Complexe));
+		xiMat[i][0] = xi[i];
+		
+		xpMat[i] = malloc(sizeof(Complexe));
+		xpMat[i][0] = xp[i];
+	}
+	
+	//Calcul préliminaire des matrices
+	TnDemiParxp = produitMat(TnDemi, tailleDN, tailleDN, xpMat, tailleDN, tailleDN);
+	
+	Complexe 
+		**DnParTnDemi = produitMat(DnMat, tailleDN, tailleDN, TnDemi, tailleDN, tailleDN),
+		**DnParTnDemiParxi = produitMat(DnParTnDemiParxi, tailleDN, tailleDN, xiMat, tailleDN, tailleDN);
+	
+	//Calcul de XL et XH
+	for(k = 0; k < N / 2; k++)
+	{
+		XL[k] =
+			somme2(
+				TnDemiParxp[k][0],
+				DnParTnDemiParxi[k][0]
+			);
+		
+		XH[k] =
+			soustraction2(
+				TnDemiParxp[k][0],
+				DnParTnDemiParxi[k][0]
+			);
+	}
+	
+	//Libération de la RAM
+	free(Dn);
+	
+	for(i = 0; i < N; i++)
+		free(TnDemi[i]);
+	free(TnDemi);
+	
+	for(i = 0; i < tailleDN; i++)
+	{
+		free(DnMat[i]);
+		free(DnParTnDemi[i]);
+		
+		free(xiMat[i]);
+		free(xpMat[i]);
+		
+		free(TnDemiParxp[i]);
+	}
+	free(DnMat);
+	free(DnParTnDemi);
+	
+	free(xiMat);
+	free(xpMat);
+	
+	free(xp);
+	free(xi);
+	free(xpxi);
+	
+	free(TnDemiParxp);
+	
+	return XLXH;
+}

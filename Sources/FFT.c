@@ -12,7 +12,7 @@ Complexe *FFT(Complexe *xN, int taille, int inverse)
 	{
 		//retour simple (calcul)
 		Complexe 
-			*XN = malloc(sizeof(Complexe) * taille/* == 2*/),
+			*XN = (Complexe *)malloc(sizeof(Complexe) * taille/* == 2*/),
 			**Tn = TN(taille, inverse),
 			**XLXH = NULL;
 		
@@ -41,7 +41,7 @@ Complexe *FFT(Complexe *xN, int taille, int inverse)
 	else if(taille > 2)
 	{
 		Complexe 
-			*X = malloc(sizeof(Complexe) * taille),
+			*X = (Complexe *)malloc(sizeof(Complexe) * taille),
 			
 			//Division du travail
 			**xpxi = xN_vers_xpxi(xN, taille),

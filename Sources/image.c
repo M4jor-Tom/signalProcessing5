@@ -12,20 +12,20 @@ Image* alloueImage(int largeur, int hauteur)
 	int allocHauteur = sizeof(short*) * hauteur;	//Contiendra les en-têtes de chaque ligne
 
 	//Allocation de mémoire
-	Image* ptr_image = malloc(sizeof(Image));
-	ptr_image->rouge = malloc(allocHauteur);
-	ptr_image->vert = malloc(allocHauteur);
-	ptr_image->bleu = malloc(allocHauteur);
-	ptr_image->gris = malloc(allocHauteur);
+	Image* ptr_image = (Image *)malloc(sizeof(Image));
+	ptr_image->rouge = (short **)malloc(allocHauteur);
+	ptr_image->vert = (short **)malloc(allocHauteur);
+	ptr_image->bleu = (short **)malloc(allocHauteur);
+	ptr_image->gris = (short **)malloc(allocHauteur);
 
 	int h;
 	for (h = 0; h < hauteur; h++)
 	{
 		//Pour chaque ligne
-		ptr_image->rouge[h] = malloc(allocLargeur);
-		ptr_image->vert[h] = malloc(allocLargeur);
-		ptr_image->bleu[h] = malloc(allocLargeur);
-		ptr_image->gris[h] = malloc(allocLargeur);
+		ptr_image->rouge[h] = (short *)malloc(allocLargeur);
+		ptr_image->vert[h] = (short *)malloc(allocLargeur);
+		ptr_image->bleu[h] = (short *)malloc(allocLargeur);
+		ptr_image->gris[h] = (short *)malloc(allocLargeur);
 	}
 
 	//Set des paramètres
@@ -94,10 +94,10 @@ Image* chargeImage(char* nom)
 
 void sauveImage(Image* monImage, char* nom)
 {
-	DonneesImageRGB* ptr_donneesImage = malloc(sizeof(DonneesImageRGB));
+	DonneesImageRGB* ptr_donneesImage = (DonneesImageRGB *)malloc(sizeof(DonneesImageRGB));
 	int nIndex = 0;
 
-	ptr_donneesImage -> donneesRGB = malloc(sizeof(short) * monImage -> hauteur * monImage -> largeur * 3);
+	ptr_donneesImage -> donneesRGB = (short *)malloc(sizeof(short) * monImage -> hauteur * monImage -> largeur * 3);
 
 	int h, l;
 	for(h = 0; h < monImage -> hauteur; h++)
@@ -117,10 +117,10 @@ void sauveImage(Image* monImage, char* nom)
 
 void sauveImageNG(Image* monImage, char* nom)
 {
-	DonneesImageRGB* ptr_donneesImage = malloc(sizeof(DonneesImageRGB));
+	DonneesImageRGB* ptr_donneesImage = (DonneesImageRGB *)malloc(sizeof(DonneesImageRGB));
 	int nIndex = 0;
 
-	ptr_donneesImage->donneesRGB = malloc(sizeof(short) * monImage->hauteur * monImage->largeur * 3);
+	ptr_donneesImage->donneesRGB = (short *)malloc(sizeof(short) * monImage->hauteur * monImage->largeur * 3);
 
 	int h, l;
 	for (h = 0; h < monImage->hauteur; h++)

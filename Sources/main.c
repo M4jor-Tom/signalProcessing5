@@ -22,8 +22,8 @@
 
 int main()
 {
-	//Tracer le signal d'origine (test)
-	trace graph = valeursFonction(SINUS, 1, 3);
+	/*//Tracer le signal d'origine (test)
+	trace graph = valeursFonction(SINUS, 0.3, 2);
 	minMax(&graph);
 	
 	//Tracer la TCD
@@ -59,7 +59,23 @@ int main()
 	
 	traceFonction(graphTCDBack, "graphTCDBack.bmp");
 	
-	libereTrace(&graphTCDBack);
+	libereTrace(&graphTCDBack);*/
+	
+	Image *ptr_sinus = chargeImage("Sinus.bmp");
+	
+	float **tcdHeaders = safeMalloc(sizeof(float *) * ptr_sinus -> hauteur);
+	tcdHeaders = TCD2D(ptr_sinus -> gris, ptr_sinus -> largeur, ptr_sinus -> hauteur, 0);
+	
+	trace *tcd2DGraph = safeMalloc(sizeof(trace) * ptr_sinus -> hauteur);
+	
+	int i;
+	for(i = 0; i < ptr_sinus -> hauteur; i++)
+	{
+		tcd2DGraph[i].valeurs = tcdHeaders[i];
+		minMax(&tcd2DGraph[i]);
+	}
+	
+	
 	
 	getch();
 	return 0;

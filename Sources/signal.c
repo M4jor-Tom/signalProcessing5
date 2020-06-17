@@ -6,6 +6,24 @@
 #include <string.h>
 #include "signal.h"
 
+
+void *safeMalloc(int sizeof_)
+{
+	void *ptr = malloc(sizeof_);
+	if(ptr == NULL)
+	{
+		printf("<safeMalloc> Error: NULL return");
+		exit(1);
+	}
+	return ptr;
+}
+
+void _free(void *ptr)
+{
+	free(ptr);
+	ptr = NULL;
+}
+
 double argument(Complexe v)
 {
 	return atan(-v.imaginaire / v.reel);
@@ -97,12 +115,12 @@ Complexe **produitMat(Complexe **a, unsigned int Ha, unsigned int La, Complexe *
 		//Operer si les matrices ont des dimensions propices au produit
 		printf("<produitMat> execute\n");
 		//Allocation de la mémoire à la valeur de return
-		ret = (Complexe **)malloc(sizeof(Complexe *) * Ha);
-		printf("<produitMat> malloc inter okay\n");
+		ret = (Complexe **)safeMalloc(sizeof(Complexe *) * Ha);
+		printf("<produitMat> safeMalloc inter okay\n");
 		for(H = 0; H < Ha; H++)
 			//Pour chaque ligne de la matrice a, allouer la mémoire
-			ret[H] = (Complexe *)malloc(sizeof(Complexe) * Lb);
-		printf("<produitMat> malloc okay\n");
+			ret[H] = (Complexe *)safeMalloc(sizeof(Complexe) * Lb);
+		printf("<produitMat> safeMalloc okay\n");
 		
 		for(L = 0; L < Lb; L++)
 		{
@@ -157,7 +175,7 @@ Complexe W(float kn, int N, int inverse)
 Complexe *DN(int N, int *nb)
 {
 	*nb = (N / 2) - 1;
-	Complexe *wN = (Complexe *)malloc(sizeof(Complexe) * *nb);
+	Complexe *wN = (Complexe *)safeMalloc(sizeof(Complexe) * *nb);
 	
 	int i;
 	for(i = 0; i < *nb; i++)
@@ -170,13 +188,13 @@ Complexe *DN(int N, int *nb)
 
 Complexe **TN(int N, int inverse)
 {
-	Complexe **headers = (Complexe **)malloc(sizeof(Complexe *) * N);
+	Complexe **headers = (Complexe **)safeMalloc(sizeof(Complexe *) * N);
 	
 	int k;
 	for(k = 0; k < N; k++)
 	{
 		int n;
-		headers[k] = (Complexe *)malloc(sizeof(Complexe) * N);
+		headers[k] = (Complexe *)safeMalloc(sizeof(Complexe) * N);
 		for(n = 0; n < N; n++)
 		{
 			headers[k][n] = W(k * n, N, inverse);
@@ -216,9 +234,9 @@ Complexe **xN_vers_xpxi(Complexe *xN, int N)
 		nxi = 0;
 		
 	Complexe
-		*xp = (Complexe *)malloc(sizeof(Complexe) * N / 2),
-		*xi = (Complexe *)malloc(sizeof(Complexe) * N / 2),
-		**xpxi = (Complexe **)malloc(sizeof(Complexe *) * 2);
+		*xp = (Complexe *)safeMalloc(sizeof(Complexe) * N / 2),
+		*xi = (Complexe *)safeMalloc(sizeof(Complexe) * N / 2),
+		**xpxi = (Complexe **)safeMalloc(sizeof(Complexe *) * 2);
 		
 	xpxi[0] = xp;
 	xpxi[1] = xi;
@@ -244,19 +262,19 @@ Complexe **xN_vers_XLXH(Complexe *xN, int N, int inverse)
 		tailleDN = 0;
 	Complexe
 		*Dn = DN(N, &tailleDN),
-		**DnMat = (Complexe **)malloc(sizeof(Complexe *) * tailleDN),
+		**DnMat = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleDN),
 		**TnDemi = TN(N, inverse),
 		**TnDemiParxp = NULL,
-		*XL = (Complexe *)malloc(sizeof(Complexe) * tailleDN),
-		*XH = (Complexe *)malloc(sizeof(Complexe) * tailleDN),
-		**XLXH = (Complexe **)malloc(sizeof(Complexe *) * 2),
+		*XL = (Complexe *)safeMalloc(sizeof(Complexe) * tailleDN),
+		*XH = (Complexe *)safeMalloc(sizeof(Complexe) * tailleDN),
+		**XLXH = (Complexe **)safeMalloc(sizeof(Complexe *) * 2),
 		*xp = NULL,
 		*xi = NULL,
 		**xpxi = NULL;
 	for(i = 0; i < tailleDN; i++)
 	{
 		//On met Dn sous forme Complexe ** pour pouvoir faire un produi matriciel
-		DnMat[i] = (Complexe *)malloc(sizeof(Complexe) * tailleDN);
+		DnMat[i] = (Complexe *)safeMalloc(sizeof(Complexe) * tailleDN);
 		
 		//On met toutes les valeurs de la matrice à 0
 		//memset(&DnMat[i], 0, sizeof(Complexe) * tailleDN);
@@ -279,15 +297,15 @@ Complexe **xN_vers_XLXH(Complexe *xN, int N, int inverse)
 	xi = xpxi[1];
 	
 	Complexe 
-		**xiMat = (Complexe **)malloc(sizeof(Complexe *) * tailleDN),
-		**xpMat = (Complexe **)malloc(sizeof(Complexe *) * tailleDN);
+		**xiMat = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleDN),
+		**xpMat = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleDN);
 	
 	for(i = 0; i < tailleDN; i++)
 	{
-		xiMat[i] = (Complexe *)malloc(sizeof(Complexe));
+		xiMat[i] = (Complexe *)safeMalloc(sizeof(Complexe));
 		xiMat[i][0] = xi[i];
 		
-		xpMat[i] = (Complexe *)malloc(sizeof(Complexe));
+		xpMat[i] = (Complexe *)safeMalloc(sizeof(Complexe));
 		xpMat[i][0] = xp[i];
 	}
 	

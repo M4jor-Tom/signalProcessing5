@@ -5,6 +5,10 @@ typedef struct Complexe
 	float reel, imaginaire;
 }Complexe;
 
+void *safeMalloc(int sizeof_);
+
+void _free(void *ptr);
+
 //Retrouve l'argument d'un complexe
 double argument(Complexe v);
 

@@ -8,7 +8,6 @@
 
 float *TCD(float *xN, int taille, int inverse)
 {
-	//FUK HERE
 	printf("%d\n", taille);
 	taille = biggestSmallerBits(taille);
 	if(taille == 2)
@@ -16,7 +15,7 @@ float *TCD(float *xN, int taille, int inverse)
 		printf("<TCD> proc init\n");
 		//retour simple (calcul)
 		float 
-			*XN = (float *)malloc(sizeof(float) * taille/* == 2*/),
+			*XN = (float *)safeMalloc(sizeof(float) * taille/* == 2*/),
 			**Tn = tcdTN(taille, inverse);
 		
 		printf("<TCD> proc inter\n");
@@ -28,8 +27,8 @@ float *TCD(float *xN, int taille, int inverse)
 				XN[k] = XN[k] + Tn[k][n] * xN[k];
 		
 		for(k = 0; k < taille; k++)
-			free(Tn[k]);
-		free(Tn);
+			_free(Tn[k]);
+		_free(Tn);
 		
 		printf("<TCD> proc end\n");
 		return XN;
@@ -38,7 +37,7 @@ float *TCD(float *xN, int taille, int inverse)
 	{
 		printf("<TCD> rec init\n");
 		float
-			*X = (float *)malloc(sizeof(float) * taille),
+			*X = (float *)safeMalloc(sizeof(float) * taille),
 		
 		//Division du travail
 			**xpxi = tcdxN_vers_xpxi(xN, taille),
@@ -59,12 +58,12 @@ float *TCD(float *xN, int taille, int inverse)
 				X[i] = XI[i - taille / 2];
 		printf("<TCD> rec post ordening\n");
 		
-		/*free(xpxi[0]);
-		free(xpxi[1]);
-		free(xpxi);
+		_free(xpxi[0]);
+		_free(xpxi[1]);
+		_free(xpxi);
 		
-		free(XP);
-		free(XI);*/
+		_free(XP);
+		_free(XI);
 		printf("<TCD> rec end\n");
 		
 		return X;

@@ -61,6 +61,6 @@ int main()
 	
 	//libereTrace(&graphTCDBack);
 	
-	getch();
+	_getch();
 	return 0;
 }

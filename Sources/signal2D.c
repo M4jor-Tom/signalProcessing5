@@ -2,17 +2,17 @@
 
 #include "signal2D.h"
 
-void traceFonction2D(trace fonction, char *fichier, int axe)
+void traceFonctions2D(trace *fonction, char *fichier, int axe)
 {
 	//Création de l'image
-	Image* ptr_image = alloueImage(fonction.nbValeurs, fonction.nbValeurs);
+	Image* ptr_image = alloueImage(fonction[0].nbValeurs, fonction[0].nbValeurs);
 	
 	int pixelAbcisse;
-	for(pixelAbcisse = 0; pixelAbcisse < fonction.nbValeurs; pixelAbcisse++)
+	for(pixelAbcisse = 0; pixelAbcisse < fonction[0].nbValeurs; pixelAbcisse++)
 	{
 		//Remplir toute l'image
 		int pixelOrdonnee, _intensite;
-		for(pixelOrdonnee = 0; pixelOrdonnee < fonction.nbValeurs; pixelOrdonnee++)
+		for(pixelOrdonnee = 0; pixelOrdonnee < fonction[pixelAbcisse].nbValeurs; pixelOrdonnee++)
 		{
 			int 
 				tempPixelAbcisse = axe == Oy
@@ -22,7 +22,7 @@ void traceFonction2D(trace fonction, char *fichier, int axe)
 					? pixelOrdonnee
 					: pixelAbcisse;
 			
-			unsigned short int intensite = (unsigned short int)((fonction.valeurs[pixelOrdonnee] - fonction.vMin) / (fonction.vMax - fonction.vMin) * 128.0);
+			unsigned short int intensite = (unsigned short int)((fonction[pixelAbcisse].valeurs[pixelOrdonnee] - fonction[pixelAbcisse].vMin) / (fonction[pixelAbcisse].vMax - fonction[pixelAbcisse].vMin) * 128.0);
 				
 			tracePoint(ptr_image, tempPixelAbcisse, tempPixelOrdonnee, "noir", intensite);
 		}
@@ -31,6 +31,30 @@ void traceFonction2D(trace fonction, char *fichier, int axe)
 	sauveImage(ptr_image, fichier);
 
 	libereImage(&ptr_image);
+}
+
+float **imageVersFloat(char *baseName, unsigned int *hauteur, unsigned int *largeur)
+{
+	Image *ptr_image = chargeImage(baseName);
+	float **ret = (float **)safeMalloc(sizeof(float *) * ptr_image -> hauteur);
+	
+	int i, j;
+	for(i = 0; i < ptr_image -> hauteur; i++)
+	{
+		ret[i] = (float *)safeMalloc(sizeof(float) * ptr_image -> largeur);
+		for(j = 0; j < ptr_image -> largeur; j++)
+		{
+			ret[i][j] = ptr_image -> gris[i][j];
+		}
+	}
+	
+	if(hauteur != NULL)
+		*hauteur = ptr_image -> hauteur;
+	if(largeur != NULL)
+		*largeur = ptr_image -> largeur;
+	
+	libereImage(&ptr_image);
+	return ret;
 }
 
 Complexe **imageVersComplexe(char *baseName, unsigned int *hauteur, unsigned int *largeur)

@@ -6,6 +6,10 @@
 #include "afficheFonctions.h"
 #include "signal.h"
 
-void traceFonction2D(trace fonction, char *fichier, int axe);
+void traceFonctions2D(trace *fonction, char *fichier, int axe);
 
-Complexe **imageVersComplexe(char *baseName, unsigned int *hauteur, unsigned int *largeur);
+//void traceFonction2D(trace fonction, char *fichier, int axe);
+
+float **imageVersFloat(char *baseName, unsigned int *hauteur, unsigned int *largeur);
+
+//Complexe **imageVersComplexe(char *baseName, unsigned int *hauteur, unsigned int *largeur);

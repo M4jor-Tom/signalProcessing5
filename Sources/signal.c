@@ -314,7 +314,7 @@ Complexe **xN_vers_XLXH(Complexe *xN, int N, int inverse)
 	
 	Complexe 
 		**DnParTnDemi = produitMat(DnMat, tailleDN, tailleDN, TnDemi, tailleDN, tailleDN),
-		**DnParTnDemiParxi = produitMat(DnParTnDemiParxi, tailleDN, tailleDN, xiMat, tailleDN, tailleDN);
+		**DnParTnDemiParxi = produitMat(DnParTnDemi, tailleDN, tailleDN, xiMat, tailleDN, tailleDN);
 	
 	//Calcul de XL et XH
 	for(k = 0; k < N / 2; k++)

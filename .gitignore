@@ -8,3 +8,15 @@
 *.layout
 
 *.o
+
+*.vcxproj
+
+*.user
+
+*.filters
+
+.vs/
+
+Debug/
+
+*.sln

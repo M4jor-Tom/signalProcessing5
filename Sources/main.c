@@ -77,6 +77,6 @@ int main()
 	
 	
 	
-	getch();
+	_getch();
 	return 0;
 }

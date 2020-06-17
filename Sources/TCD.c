@@ -16,7 +16,7 @@ float *TCD(float *xN, int taille, int inverse)
 		printf("<TCD> proc init\n");
 		//retour simple (calcul)
 		float 
-			*XN = malloc(sizeof(float) * taille/* == 2*/),
+			*XN = (float *)malloc(sizeof(float) * taille/* == 2*/),
 			**Tn = tcdTN(taille, inverse);
 		
 		printf("<TCD> proc inter\n");
@@ -38,7 +38,7 @@ float *TCD(float *xN, int taille, int inverse)
 	{
 		printf("<TCD> rec init\n");
 		float
-			*X = malloc(sizeof(float) * taille),
+			*X = (float *)malloc(sizeof(float) * taille),
 		
 		//Division du travail
 			**xpxi = tcdxN_vers_xpxi(xN, taille),

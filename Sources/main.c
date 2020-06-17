@@ -44,7 +44,7 @@ int main()
 	traceFonction(graph, "graph.bmp");
 	traceFonction(graphTCD, "graphTCD.bmp");
 
-	//libereTrace(&graph);
+	libereTrace(&graph);
 	
 	//Tracer le signal retransformé
 	trace graphTCDBack =
@@ -53,13 +53,13 @@ int main()
 		.nbValeurs = biggestSmallerBits(graphTCD.nbValeurs)
 	};
 	
-	//libereTrace(&graphTCD);
+	libereTrace(&graphTCD);
 	
 	minMax(&graphTCDBack);
 	
 	traceFonction(graphTCDBack, "graphTCDBack.bmp");
 	
-	//libereTrace(&graphTCDBack);
+	libereTrace(&graphTCDBack);
 	
 	_getch();
 	return 0;

@@ -36,12 +36,12 @@ void traceFonction2D(trace fonction, char *fichier, int axe)
 Complexe **imageVersComplexe(char *baseName, unsigned int *hauteur, unsigned int *largeur)
 {
 	Image *ptr_image = chargeImage(baseName);
-	Complexe **ret = malloc(sizeof(Complexe *) * ptr_image -> hauteur);
+	Complexe **ret = (Complexe **)malloc(sizeof(Complexe *) * ptr_image -> hauteur);
 	
 	int i, j;
 	for(i = 0; i < ptr_image -> hauteur; i++)
 	{
-		ret[i] = malloc(sizeof(Complexe) * ptr_image -> largeur);
+		ret[i] = (Complexe *)malloc(sizeof(Complexe) * ptr_image -> largeur);
 		for(j = 0; j < ptr_image -> largeur; j++)
 		{
 			ret[i][j].reel = ptr_image -> gris[i][j];

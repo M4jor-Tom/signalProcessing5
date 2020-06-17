@@ -4,8 +4,8 @@
 CPP      = g++.exe
 CC       = gcc.exe
 WINDRES  = windres.exe
-OBJ      = Sources/main.o Sources/afficheFonctions.o Sources/BmpLib.o Sources/creerFonctions.o Sources/FFT.o Sources/FFT2D.o Sources/image.o Sources/OutilsLib.o Sources/signal.o Sources/signal2D.o Sources/TCD.o Sources/signalTCD.o
-LINKOBJ  = Sources/main.o Sources/afficheFonctions.o Sources/BmpLib.o Sources/creerFonctions.o Sources/FFT.o Sources/FFT2D.o Sources/image.o Sources/OutilsLib.o Sources/signal.o Sources/signal2D.o Sources/TCD.o Sources/signalTCD.o
+OBJ      = Sources/afficheFonctions.o Sources/BmpLib.o Sources/creerFonctions.o Sources/FFT.o Sources/FFT2D.o Sources/image.o Sources/main.o Sources/OutilsLib.o Sources/signal.o Sources/signal2D.o Sources/signalTCD.o Sources/TCD.o Sources/TCD2D.o
+LINKOBJ  = Sources/afficheFonctions.o Sources/BmpLib.o Sources/creerFonctions.o Sources/FFT.o Sources/FFT2D.o Sources/image.o Sources/main.o Sources/OutilsLib.o Sources/signal.o Sources/signal2D.o Sources/signalTCD.o Sources/TCD.o Sources/TCD2D.o
 LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
 INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
 CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
@@ -23,9 +23,6 @@ clean: clean-custom
 
 $(BIN): $(OBJ)
 	$(CC) $(LINKOBJ) -o $(BIN) $(LIBS)
-
-Sources/main.o: Sources/main.c
-	$(CC) -c Sources/main.c -o Sources/main.o $(CFLAGS)
 
 Sources/afficheFonctions.o: Sources/afficheFonctions.c
 	$(CC) -c Sources/afficheFonctions.c -o Sources/afficheFonctions.o $(CFLAGS)
@@ -45,6 +42,9 @@ Sources/FFT2D.o: Sources/FFT2D.c
 Sources/image.o: Sources/image.c
 	$(CC) -c Sources/image.c -o Sources/image.o $(CFLAGS)
 
+Sources/main.o: Sources/main.c
+	$(CC) -c Sources/main.c -o Sources/main.o $(CFLAGS)
+
 Sources/OutilsLib.o: Sources/OutilsLib.c
 	$(CC) -c Sources/OutilsLib.c -o Sources/OutilsLib.o $(CFLAGS)
 
@@ -54,8 +54,11 @@ Sources/signal.o: Sources/signal.c
 Sources/signal2D.o: Sources/signal2D.c
 	$(CC) -c Sources/signal2D.c -o Sources/signal2D.o $(CFLAGS)
 
+Sources/signalTCD.o: Sources/signalTCD.c
+	$(CC) -c Sources/signalTCD.c -o Sources/signalTCD.o $(CFLAGS)
+
 Sources/TCD.o: Sources/TCD.c
 	$(CC) -c Sources/TCD.c -o Sources/TCD.o $(CFLAGS)
 
-Sources/signalTCD.o: Sources/signalTCD.c
-	$(CC) -c Sources/signalTCD.c -o Sources/signalTCD.o $(CFLAGS)
+Sources/TCD2D.o: Sources/TCD2D.c
+	$(CC) -c Sources/TCD2D.c -o Sources/TCD2D.o $(CFLAGS)

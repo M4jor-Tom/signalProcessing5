@@ -251,7 +251,7 @@ Complexe **xN_vers_xpxi(Complexe *xN, int N)
 	return xpxi;
 }
 
-Complexe **xN_vers_XLXH(Complexe *xN, int N, int inverse)
+Complexe **XPXI_vers_XLXH(Complexe *XP, Complexe *XI, int N, int inverse)
 {
 	//Allocation de la RAM
 	int
@@ -292,10 +292,6 @@ Complexe **xN_vers_XLXH(Complexe *xN, int N, int inverse)
 	XLXH[0] = XL;
 	XLXH[1] = XH;
 	
-	xpxi = xN_vers_xpxi(xN, N);
-	xp = xpxi[0];
-	xi = xpxi[1];
-	
 	Complexe 
 		**xiMat = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleDN),
 		**xpMat = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleDN);
@@ -303,10 +299,10 @@ Complexe **xN_vers_XLXH(Complexe *xN, int N, int inverse)
 	for(i = 0; i < tailleDN; i++)
 	{
 		xiMat[i] = (Complexe *)safeMalloc(sizeof(Complexe));
-		xiMat[i][0] = xi[i];
+		xiMat[i][0] = XI[i];
 		
 		xpMat[i] = (Complexe *)safeMalloc(sizeof(Complexe));
-		xpMat[i][0] = xp[i];
+		xpMat[i][0] = XP[i];
 	}
 	
 	//Calcul préliminaire des matrices

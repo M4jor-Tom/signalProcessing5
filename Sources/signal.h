@@ -37,4 +37,4 @@ void printTN(Complexe **Tn, int taille);
 
 Complexe **xN_vers_xpxi(Complexe *xN, int N);
 
-Complexe **xN_vers_XLXH(Complexe *xN, int N, int inverse);
+Complexe **XPXI_vers_XLXH(Complexe *XP, Complexe *XI, int N, int inverse);

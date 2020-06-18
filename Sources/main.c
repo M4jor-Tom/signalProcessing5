@@ -7,7 +7,6 @@
 #define Ox 1
 
 #include "signal.h"
-#include "signalTCD.h"
 #include "image.h"
 #include "creerFonctions.h"
 #include "afficheFonctions.h"
@@ -22,7 +21,221 @@
 
 int main()
 {
-	//Tracer le signal d'origine (test)
+	system("color F0");
+	printf("<main> Test des fonction des questions P1 et P2 partie 4\n\n");
+	
+	trace graph;
+	
+	memset(&graph, 0, sizeof(trace));
+	
+	bool resaisir = false;
+	double frequence = 0.0;
+	int nbPeriodes = 0,
+		formeSignal = SINUS,
+		inverse = 0,
+		i;
+	
+	printf("<main> Frequence: ");
+	scanf("%lf", &frequence);
+	getchar();
+	
+	printf("<main> Nombre de periodes: ");
+	scanf("%d", &nbPeriodes);
+	getchar();
+	
+	do
+	{
+		printf("<main> Forme du signal:\n\t1.Sinus\n\t2.Cosinus\n\t3.Rectangle\n");
+		scanf("%d", &formeSignal);
+		getchar();
+		
+		if(formeSignal - 1 != SINUS && formeSignal - 1 != COSINUS && formeSignal - 1 != RECTANGULAIRE)
+		{
+			printf("<main> Veuillez re-saisir\n");
+			resaisir = true;
+		}
+		else resaisir = false;
+	}while(resaisir);
+	
+	int dimSignal = 1;
+	do
+	{
+		if(dimSignal != 1 && dimSignal != 2)
+			printf("<main> Veuillez re-saisir:\n");
+		
+		printf("<main> Dimensions du signal: ");
+		scanf("%d", &dimSignal);
+		getchar();
+	}while(dimSignal != 1 && dimSignal != 2);
+	
+	graph = valeursFonction(formeSignal - 1, frequence, nbPeriodes);
+	
+	if(dimSignal == 2)
+	{
+		int axe = Oy;
+		do
+		{
+			if(axe != Oy && axe != Ox)
+				printf("<main> Veuillez re-saisir:\n");
+			
+			printf("<main> Axe: \n\t1.Oy\n\t2.Ox\n");
+			scanf("%d", &axe);
+			getchar();
+			axe--;
+		}while(axe != Oy && axe != Ox);
+		
+		//traceFonction2D(graph, "graph2D.bmp", axe);
+	}
+	else if(dimSignal == 1)
+		traceFonction(graph, "graph.bmp");
+	
+	
+	int choixGraph = 1;
+	do
+	{
+		if(choixGraph != 1 && choixGraph != 2)
+			printf("<main> Veuillez re-saisir:\n");
+		
+		printf("<main>\n1.Tracer la fonction\n2.Tracer la FFT\n");
+		scanf("%d", &choixGraph);
+		getchar();
+	}while(choixGraph != 1 && choixGraph != 2);
+	
+	//Transmission des valeurs vers une valeur de type complexe
+	//Rendre multiple de 2^n
+	graph.nbValeurs = biggestSmallerBits(graph.nbValeurs);
+	Complexe *graphComplexe = malloc(sizeof(Complexe) * graph.nbValeurs);
+	for(i = 0; i < graph.nbValeurs; i++)
+	{
+		graphComplexe[i].reel = (float)graph.valeurs[i];
+		graphComplexe[i].imaginaire = 0.0;
+	}
+	
+	Complexe *fft = FFT(graphComplexe, graph.nbValeurs, inverse);
+	
+	if(choixGraph == 2)
+	{
+		//Tracer FFT
+		for(i = 0; i < graph.nbValeurs; i++)
+			graph.valeurs[i] = fft[i].reel;
+			
+		minMax(&graph);
+		
+		if(dimSignal == 1)
+		{
+			traceFonction(graph, "fft.bmp");
+		}
+		/*else if(dimSignal == 2)
+		{
+			int hauteurImage2D, largeurImage2D;
+			Complexe 
+				**xN2D = imageVersComplexe("graph2D.bmp", &hauteurImage2D, &largeurImage2D),
+				**fft2d = FFT2D(xN2D, largeurImage2D, hauteurImage2D, inverse);
+			
+			trace fft2DGraph;
+			memset(&fft2DGraph, 0, sizeof(trace));
+			
+			fft2DGraph.nbValeurs = largeurImage2D;
+			fft2DGraph.valeurs = malloc(sizeof(double) * fft2DGraph.nbValeurs);
+			
+			for(i = 0; i < fft2DGraph.nbValeurs; i++)
+				fft2DGraph.valeurs[i] = fft2d[0][i].reel;
+			
+			minMax(&fft2DGraph);
+			printf("test post\n");
+			traceFonction2D(fft2DGraph, "fft2d.bmp", Oy);
+		}*/
+	}
+	
+	printf("\n<main> Test de FFT() avec les valeurs du graphique dessine:\n");
+	int 
+		*picsNegatifs = NULL,
+		sizeNegatif = 0,
+		*picsPositifs = NULL,
+		sizePositif = 0;
+	for(i = 0; i < graph.nbValeurs; i++)
+	{
+		printf("<main> X[%d] = ", i);
+		printComplexe(fft[i]);
+		printf("\n");
+		
+		if(fft[i].reel < -10.0 || fft[i].imaginaire < -10.0)
+		{
+			picsNegatifs = realloc(picsNegatifs, ++sizeNegatif * sizeof(int));
+			picsNegatifs[sizeNegatif - 1] = i;
+		}
+		else if(fft[i].reel > 10.0 || fft[i].imaginaire > 10.0)
+		{
+			picsPositifs = realloc(picsPositifs, ++sizePositif * sizeof(int));
+			picsPositifs[sizePositif - 1] = i;
+		}
+	}
+	for(i = 0; i < sizeNegatif; i++)
+	{
+		printf("<main> Pic negatif %d: %d\n", i + 1, picsNegatifs[i]);
+	}
+	for(i = 0; i < sizePositif; i++)
+	{
+		printf("<main> Pic positif %d: %d\n", i + 1, picsPositifs[i]);
+	}
+	free(picsNegatifs);
+	free(picsPositifs);
+	
+	
+	
+	//Test des fonctions
+	
+	printf("\n\n<main> Test des fonction des questions P3 et P4 partie 4\n\n");
+	
+	printf("<main> Test de TN():\nSaisir une taille: ");
+	
+	int taille = 0;
+	scanf("%d", &taille);
+	getchar();
+	
+	printTN(TN(taille, inverse), taille);
+	
+	printf("<main> A cause d'un bug lors du produit matriciel, xN_vers_XLXH() ne fonctionne que lorsqu'on lui demande N = 2\n");
+	getch();
+	
+	printf("<main> Test de xN_vers_XLXH():\nSaisir N (taille): ");
+	scanf("%d", &taille);
+	getchar();
+	
+	//Rendre pair
+	if(taille % 2) taille++;
+	printf("\n<main> Saisie de xN avec N = %d\n", taille);
+	
+	Complexe 
+		*xN = malloc(sizeof(Complexe) * taille),
+		**XLXH = NULL;
+	for(i = 0; i < taille; i++)
+	{
+		printf("<main> Re(x[%d]) = ", i);
+		scanf("%f", &xN[i].reel);
+		getchar();
+		
+		printf("<main> Im(x[%d]) = ", i);
+		scanf("%f", &xN[i].imaginaire);
+		getchar();
+	}
+	
+	/*printf("<main> Test de xN_vers_XLXH():\n");
+	XLXH = xN_vers_XLXH(xN, taille, inverse);
+	free(xN);
+	
+	Complexe 
+		*XL = XLXH[0],
+		*XH = XLXH[1];
+	
+	//Affichage des valeurs du test
+	for(i = 0; i < taille / 2; i++)
+	{
+		printf("<main> XL[%d] = ", i); printComplexe(XL[i]); printf("\n");
+		printf("<main> XH[%d] = ", i); printComplexe(XH[i]); printf("\n");
+	}
+	
+	//Tracer le signal d'origine (test)/*
 	trace graph = valeursFonction(SINUS, 0.3, 2);
 	minMax(&graph);
 	

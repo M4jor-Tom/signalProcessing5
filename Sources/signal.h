@@ -20,6 +20,8 @@ unsigned int biggestSmallerBits(unsigned int max);
 
 Complexe somme2(Complexe a, Complexe b);
 
+Complexe soustraction2(Complexe a, Complexe b);
+
 Complexe produit2(Complexe a, Complexe b);
 
 Complexe **produitMat(Complexe **a, unsigned int Ha, unsigned int La, Complexe **b, unsigned int Hb, unsigned int Lb);

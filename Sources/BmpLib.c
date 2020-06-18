@@ -95,7 +95,7 @@ DonneesImageRGB *lisBMPRGB(char *nom)
 							
 							/* On alloue la place pour lire les donnes */
 							if
-								((donneesImage->donneesRGB = (unsigned char *)malloc((unsigned int)donneesImage->largeurImage*(unsigned int)donneesImage->hauteurImage*3)) != NULL)
+								((donneesImage->donneesRGB = (unsigned char *)safeMalloc((unsigned int)donneesImage->largeurImage*(unsigned int)donneesImage->hauteurImage*3)) != NULL)
 							{
 								/* donneesImage->donneesRGB != NULL */
 								
@@ -105,7 +105,7 @@ DonneesImageRGB *lisBMPRGB(char *nom)
 								
 								/* On alloue la place pour lire chaque scanline */
 								if
-									((scanline = (unsigned char *)malloc((unsigned int)tailleScanLine)) != NULL)
+									((scanline = (unsigned char *)safeMalloc((unsigned int)tailleScanLine)) != NULL)
 								{
 									/* scanline != NULL */
 									
@@ -225,7 +225,7 @@ bool ecrisBMPRGB_Dans(DonneesImageRGB *donneesImage, char *nom)
 				
 				/* On alloue la place pour ecrire chaque scanline */
 				if
-					((scanline = (unsigned char *)malloc((unsigned int)tailleScanLine)) != NULL)
+					((scanline = (unsigned char *)safeMalloc((unsigned int)tailleScanLine)) != NULL)
 				{
 					/* scanline != NULL */
 					

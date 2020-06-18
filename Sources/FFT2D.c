@@ -5,12 +5,12 @@ Complexe **FFT2D(Complexe **xN, int tailleL, int tailleH, int inverse)
 	tailleL = biggestSmallerBits(tailleL);
 	tailleH = biggestSmallerBits(tailleH);
 	
-	Complexe **XN = (Complexe **)malloc(sizeof(Complexe *) * tailleH);
+	Complexe **XN = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleH);
 	
 	int i;
 	for(i = 0; i < tailleH; i++)
 	{
-		XN[i] = (Complexe *)malloc(sizeof(Complexe) * tailleL);
+		XN[i] = (Complexe *)safeMalloc(sizeof(Complexe) * tailleL);
 		XN[i] = FFT(xN[i], tailleL, inverse);
 	}
 	
@@ -25,12 +25,12 @@ Complexe **FFT2D(Complexe **xN, int tailleL, int tailleH, int inverse)
 Complexe **transposee(Complexe **mat, int taille1, int taille2)
 {
 	//Allocation lignes
-	Complexe **ret = (Complexe **)malloc(sizeof(Complexe * ) * taille1);
+	Complexe **ret = (Complexe **)safeMalloc(sizeof(Complexe * ) * taille1);
 	
 	int i, j;
 	for(i = 0; i < taille1; i++)
 		//Allocation cases
-		ret = (Complexe *)malloc(sizeof(Complexe) * taille2);
+		ret = (Complexe *)safeMalloc(sizeof(Complexe) * taille2);
 	
 	for(i = 0; i < taille1; i++)
 		for(j = 0; j < taille2; j++)

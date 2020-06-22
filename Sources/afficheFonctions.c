@@ -1,10 +1,11 @@
 #define PI 3.1415
 #define PIXELS_PAR_UNITES 100
-#define flatTreshold (long long)15
+#define flatTreshold 15
 
 #include <math.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "image.h"
 #include "afficheFonctions.h"
@@ -81,34 +82,35 @@ void printTrace(trace graph)
 	int i;
 	for(i = 0; i < graph.nbValeurs; i++)
 	{
-		printf("<printTrace> %d: %.2f [%.2f;%.2f]\n", i, graph.valeurs[i], graph.vMin, graph.vMax);
+		printf("<printTrace> %d: %.2lf [%.2lf;%.2lf]\n", i, graph.valeurs[i], graph.vMin, graph.vMax);
 	}
 }
 
-void flatTrace(trace *ptr_graph)
+void flatTrace(trace *ptr_graph, int treshold)
 {
 	int i;
-	if(ptr_graph -> vMin < flatTreshold * -1)
+	//if(ptr_graph -> vMin < flatTreshold * -1)
 		for(i = 0; i < ptr_graph -> nbValeurs; i++)
-			if(ptr_graph -> valeurs[i] <  flatTreshold * -1)
+			if(ptr_graph -> valeurs[i] < -treshold)
 			{
-				ptr_graph -> valeurs[i] = flatTreshold * -1;
-				ptr_graph -> vMin = flatTreshold * -1;
+				ptr_graph -> valeurs[i] = -treshold;
+				ptr_graph -> vMin = -treshold;
 			}
 		
-	if(ptr_graph -> vMax > flatTreshold)
+	//if(ptr_graph -> vMax > flatTreshold)
 		for(i = 0; i < ptr_graph -> nbValeurs; i++)
-			if(ptr_graph -> valeurs[i] > flatTreshold)
+			if(ptr_graph -> valeurs[i] > treshold)
 			{
-				ptr_graph -> valeurs[i] = flatTreshold;
-				ptr_graph -> vMax = flatTreshold;
+				ptr_graph -> valeurs[i] = treshold;
+				ptr_graph -> vMax = treshold;
 			}
 }
 
 void traceFonction(trace fonction, char *fichier)
 {
-	flatTrace(&fonction);
+	flatTrace(&fonction, flatTreshold);
 	printTrace(fonction);
+
 	//Création de l'image
 	int 
 		largeurImagePixels = fonction.nbValeurs, 
@@ -120,14 +122,14 @@ void traceFonction(trace fonction, char *fichier)
 	initialiseRepereCentre(ptr_image);
 	
 	int pixelAbcisse, pixelOrdonneePrecedentTrace = (int)(fonction.valeurs[0] * PIXELS_PAR_UNITES) + axeAbcisse;
-	printf("%d\n\n", pixelOrdonneePrecedentTrace);
+	//printf("<traceFonction> [0;%d]\n\n", pixelOrdonneePrecedentTrace);
 	for(pixelAbcisse = 0; pixelAbcisse < fonction.nbValeurs; pixelAbcisse++)
 	{
 		int 
 			pixelOrdonnee = (int)(fonction.valeurs[pixelAbcisse] * PIXELS_PAR_UNITES),
 			pixelOrdonneeTrace = pixelOrdonnee + axeAbcisse;
 			
-		printf("[%d;%d]\n", pixelAbcisse, pixelOrdonneeTrace);
+		//printf("<traceFonction> [%d;%d]\n", pixelAbcisse, pixelOrdonneeTrace);
 		
 		tracePoint(ptr_image, pixelOrdonneeTrace, pixelAbcisse, "noir", 0);
 		

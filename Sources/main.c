@@ -1,3 +1,11 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <conio.h>
+#ifdef _MSC_VER
+	#define getch() _getch()
+	#define getche() _getche()
+#endif
+
 #define PI 3.1415
 
 #define SINUS 0
@@ -17,7 +25,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <conio.h>
 
 int main()
 {

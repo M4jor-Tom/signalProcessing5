@@ -12,8 +12,11 @@
 #define COSINUS 1
 #define RECTANGLE 2
 #define RECTANGULAIRE 2
+
 #define Oy 0
 #define Ox 1
+#define horizontal 0
+#define vertical 1
 
 #include "signal.h"
 #include "image.h"
@@ -31,7 +34,9 @@ int main()
 {
 	system("color F0");
 
-	Complexe* xN = NULL;
+	Complexe
+		*xN = NULL,
+		**xN2D = NULL;
 	trace 
 		temporalGraph,
 		fftGraph,
@@ -42,7 +47,8 @@ int main()
 	short int 
 		reverse = 0,
 		dimensions = 1,
-		signalForm = SINUS;
+		signalForm = SINUS,
+		axis = horizontal;
 	bool 
 		leave = false,
 		getFft = true;
@@ -65,7 +71,7 @@ int main()
 			redo = false;
 
 			//Processing query
-			switch (getch())
+			switch (getche())
 			{
 
 				case '1':
@@ -76,7 +82,7 @@ int main()
 				case '2':
 				case 'é':
 					//Wanted FFT or temporal
-					printf("Signal form:\n\t1.Sinus\n\t2.Cosinus\n\t3.Rectangle\n");
+					printf("\n\nSignal form:\n\t1.Sinus\n\t2.Cosinus\n\t3.Rectangle\n");
 
 					do
 					{
@@ -85,7 +91,7 @@ int main()
 						else printf("Please select: ");
 						redo = false;
 
-						switch(getch())
+						switch(getche())
 						{
 							case '1':
 							case '&':
@@ -107,7 +113,7 @@ int main()
 						}
 					}while(redo);
 
-					printf("Signal dimensions:\n\t1.Graphic (1 dimension)\n\t2.Image (2 dimensions)\n");
+					printf("\n\nSignal dimensions:\n\t1.Graphic (1 dimension)\n\t2.Image (2 dimensions)\n");
 
 					do
 					{
@@ -116,7 +122,7 @@ int main()
 						else printf("Please select: ");
 						redo = false;
 
-						switch (getch())
+						switch (getche())
 						{
 							case '1':
 							case '&':
@@ -126,6 +132,32 @@ int main()
 							case '2':
 							case 'é':
 								dimensions = 2;
+
+								printf("\n\nPlease select an axis:\n1.Horizontal\n2.Vertical\n");
+								do
+								{
+									if (redo)
+										printf("\rPlease re-select: ");
+									else printf("Please select: ");
+									redo = false;
+
+									switch (getche())
+									{
+										case '1':
+										case '&':
+											axis = horizontal;
+											break;
+
+										case '2':
+										case 'é':
+											axis = vertical;
+											break;
+
+										default:
+											redo = true;
+									}
+
+								} while (redo);
 								break;
 
 							default:
@@ -146,16 +178,41 @@ int main()
 					temporalGraph = valeursFonction(signalForm, frequency, periodsCount);
 
 
-					if (getFft)
+					if(getFft)
 					{
-						temporalGraph.nbValeurs = biggestSmallerBits(temporalGraph.nbValeurs);
+						fftGraph.nbValeurs = biggestSmallerBits(temporalGraph.nbValeurs);
 					}
 
 					xN = safeMalloc(sizeof(Complexe) * temporalGraph.nbValeurs);
 
-					if(getFft)
+					if(getFft && dimensions == 1)
 					{
+						//FFT 1D
+						for (i = 0; i < temporalGraph.nbValeurs; i++)
+							temporalGraph.valeurs[i] = xN[i].reel;
+
 						fftGraph.valeurs = FFT(xN, temporalGraph.nbValeurs, reverse);
+						minMax(&fftGraph);
+						traceFonction(fftGraph, "graph.bmp");
+					}
+					else if (dimensions == 1)
+					{
+						//TEMP 1D
+						traceFonction(temporalGraph, "graph.bmp");
+					}
+					else if (getFft)
+					{
+						//FFT 2D
+
+					}
+					else
+					{
+						//TEMP 2D
+						temporalGraph2D = safeMalloc(sizeof(trace) * temporalGraph.nbValeurs);
+						for (i = 0; i < temporalGraph.nbValeurs; i++)
+							temporalGraph2D[i] = temporalGraph;
+
+						traceFonctions2D(temporalGraph2D, "graph.bmp", axis);
 					}
 
 					break;
@@ -175,7 +232,7 @@ int main()
 	} while (leave == false);
 
 	
-
+	/*
 	printf("<main> Test des fonction des questions P1 et P2 partie 4\n\n");
 	
 	trace graph;
@@ -274,7 +331,7 @@ int main()
 			minMax(&fft2DGraph);
 			printf("test post\n");
 			traceFonction2D(fft2DGraph, "fft2d.bmp", Oy);
-		}*/
+		}*//*
 	}
 	
 	printf("\n<main> Test de FFT() avec les valeurs du graphique dessine:\n");

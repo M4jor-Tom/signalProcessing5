@@ -1,6 +1,6 @@
 #define PI 3.1415
 #define PIXELS_PAR_UNITES 100
-#define flatTreshold 15
+#define flatTreshold (long long)15
 
 #include <math.h>
 #include <stdio.h>
@@ -107,8 +107,8 @@ void flatTrace(trace *ptr_graph)
 
 void traceFonction(trace fonction, char *fichier)
 {
-	printTrace(fonction);
 	flatTrace(&fonction);
+	printTrace(fonction);
 	//Création de l'image
 	int 
 		largeurImagePixels = fonction.nbValeurs, 

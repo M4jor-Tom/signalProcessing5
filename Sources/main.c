@@ -10,6 +10,7 @@
 
 #define SINUS 0
 #define COSINUS 1
+#define RECTANGLE 2
 #define RECTANGULAIRE 2
 #define Oy 0
 #define Ox 1
@@ -29,10 +30,155 @@
 int main()
 {
 	system("color F0");
+
+	Complexe* xN = NULL;
+	trace 
+		temporalGraph,
+		fftGraph,
+		*temporalGraph2D,
+		*fftGraph2D;
+	float frequency;
+	int periodsCount, i;
+	short int 
+		reverse = 0,
+		dimensions = 1,
+		signalForm = SINUS;
+	bool 
+		leave = false,
+		getFft = true;
+
+	memset(&temporalGraph, 0, sizeof(trace));
+	memset(&fftGraph, 0, sizeof(trace));
+
+	do
+	{
+		system("cls");
+
+		//Grabbing process
+		printf("Output mode:\n1.Temporal signal\n2.Fourier transform\n3.Leave\n\n");
+		bool redo = false;
+		do
+		{
+			if (redo)
+				printf("\rPlease re-select: ");
+			else printf("Please select: ");
+			redo = false;
+
+			//Processing query
+			switch (getch())
+			{
+
+				case '1':
+				case '&':
+					//Wanted temporal
+					getFft = false;
+
+				case '2':
+				case 'é':
+					//Wanted FFT or temporal
+					printf("Signal form:\n\t1.Sinus\n\t2.Cosinus\n\t3.Rectangle\n");
+
+					do
+					{
+						if (redo)
+							printf("\rPlease re-select: ");
+						else printf("Please select: ");
+						redo = false;
+
+						switch(getch())
+						{
+							case '1':
+							case '&':
+								signalForm = SINUS;
+								break;
+
+							case '2':
+							case 'é':
+								signalForm = COSINUS;
+								break;
+
+							case '3':
+							case '"':
+								signalForm = RECTANGLE;
+								break;
+
+							default:
+								redo = true;
+						}
+					}while(redo);
+
+					printf("Signal dimensions:\n\t1.Graphic (1 dimension)\n\t2.Image (2 dimensions)\n");
+
+					do
+					{
+						if (redo)
+							printf("\rPlease re-select: ");
+						else printf("Please select: ");
+						redo = false;
+
+						switch (getch())
+						{
+							case '1':
+							case '&':
+								dimensions = 1;
+								break;
+
+							case '2':
+							case 'é':
+								dimensions = 2;
+								break;
+
+							default:
+								redo = true;
+						}
+
+					} while (redo);
+
+					printf("\nFrequency: ");
+					scanf("%f", &frequency);
+					getchar();
+
+					printf("Periods count: ");
+					scanf("%d", &periodsCount);
+					getchar();
+
+					//Processing graph (bmp file)
+					temporalGraph = valeursFonction(signalForm, frequency, periodsCount);
+
+
+					if (getFft)
+					{
+						temporalGraph.nbValeurs = biggestSmallerBits(temporalGraph.nbValeurs);
+					}
+
+					xN = safeMalloc(sizeof(Complexe) * temporalGraph.nbValeurs);
+
+					if(getFft)
+					{
+						fftGraph.valeurs = FFT(xN, temporalGraph.nbValeurs, reverse);
+					}
+
+					break;
+
+				case '3':
+				case '"':
+					//Wanted to leave
+					leave = true;
+					break;
+
+				default:
+					redo = true;
+			}
+		}while(redo);
+
+		
+	} while (leave == false);
+
+	
+
 	printf("<main> Test des fonction des questions P1 et P2 partie 4\n\n");
 	
 	trace graph;
-	
 	memset(&graph, 0, sizeof(trace));
 	
 	bool resaisir = false;
@@ -41,28 +187,6 @@ int main()
 		formeSignal = SINUS,
 		inverse = 0,
 		i;
-	
-	printf("<main> Frequence: ");
-	scanf("%lf", &frequence);
-	getchar();
-	
-	printf("<main> Nombre de periodes: ");
-	scanf("%d", &nbPeriodes);
-	getchar();
-	
-	do
-	{
-		printf("<main> Forme du signal:\n\t1.Sinus\n\t2.Cosinus\n\t3.Rectangle\n");
-		scanf("%d", &formeSignal);
-		getchar();
-		
-		if(formeSignal - 1 != SINUS && formeSignal - 1 != COSINUS && formeSignal - 1 != RECTANGULAIRE)
-		{
-			printf("<main> Veuillez re-saisir\n");
-			resaisir = true;
-		}
-		else resaisir = false;
-	}while(resaisir);
 	
 	int dimSignal = 1;
 	do
@@ -93,8 +217,6 @@ int main()
 		
 		//traceFonction2D(graph, "graph2D.bmp", axe);
 	}
-	else if(dimSignal == 1)
-		traceFonction(graph, "graph.bmp");
 	
 	
 	int choixGraph = 1;
@@ -117,7 +239,8 @@ int main()
 		graphComplexe[i].reel = (float)graph.valeurs[i];
 		graphComplexe[i].imaginaire = 0.0;
 	}
-	
+	if(dimSignal == 1)
+		traceFonction(graph, "graph.bmp");
 	Complexe *fft = FFT(graphComplexe, graph.nbValeurs, inverse);
 	
 	if(choixGraph == 2)

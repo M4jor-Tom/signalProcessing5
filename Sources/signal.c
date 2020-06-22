@@ -127,16 +127,19 @@ Complexe **produitMat(Complexe **a, unsigned int Ha, unsigned int La, Complexe *
 			//Pour chaque colonne de la matrice b
 			for(H = 0; H < Ha; H++)
 			{
-				printf("<produitMat> loop %d;%d\n", L, H);
+				//printf("<produitMat> loop %d;%d\n", L, H);
 				//Pour chaque ligne de la matrice a
 				//Calculer les produits avant la somme
 				
-				Complexe somme;
-				memset(&somme, 0, sizeof(Complexe));
+				Complexe somme =
+				{
+					.reel = 0.0,
+					.imaginaire = 0.0
+				};
 				for(prodLH = 0; prodLH < Hb && prodLH < La; prodLH++)
 				{
-					printf("<produitMat> print okay\n");
-					printf("<produitMat> "); printComplexe(a[prodLH][H]); printf(" * "); printComplexe(b[L][prodLH]); printf("\n");
+					//printf("<produitMat> print okay\n");
+					//printf("<produitMat> "); printComplexe(a[prodLH][H]); printf(" * "); printComplexe(b[L][prodLH]); printf("\n");
 					somme =
 						somme2(
 							somme,
@@ -145,7 +148,7 @@ Complexe **produitMat(Complexe **a, unsigned int Ha, unsigned int La, Complexe *
 								b[L][prodLH]
 							)
 						);
-					printf("<produitMat> operation okay\n");
+					//printf("<produitMat> operation okay\n");
 				}
 				ret[H][L] = somme;
 			}
@@ -304,7 +307,7 @@ Complexe **XPXI_vers_XLXH(Complexe *XP, Complexe *XI, int N, int inverse)
 		xpMat[i][0] = XP[i];
 	}
 	
-	printf("<XPXI_vers_XLXH> Valeurs d'entrees:\n");
+	/*printf("<XPXI_vers_XLXH> Valeurs d'entrees:\n");
 	for(i = 0; i < tailleDN; i++)
 		for(j = 0; j < tailleDN; j++)
 		{
@@ -313,7 +316,7 @@ Complexe **XPXI_vers_XLXH(Complexe *XP, Complexe *XI, int N, int inverse)
 			printf("\n<XPXI_vers_XLXH> xpMat[%d;%d]: ", i, j); printComplexe(xpMat[i][j]);
 			printf("\n<XPXI_vers_XLXH> DnMat[%d;%d]: ", i, j); printComplexe(DnMat[i][j]);
 			//printf("\n<XPXI_vers_XLXH> DnParTnDemi[%d;%d]: ", i, j); printComplexe(DnParTnDemi[i][j]);
-		}
+		}*/
 	
 	
 	//Calcul préliminaire des matrices
@@ -327,7 +330,7 @@ Complexe **XPXI_vers_XLXH(Complexe *XP, Complexe *XI, int N, int inverse)
 	Complexe **DnParTnDemiParxi = produitMat(DnParTnDemi, tailleDN, tailleDN, xiMat, tailleDN, tailleDN);
 	
 	//Calcul de XL et XH
-	for(k = 0; k < N / 2; k++)
+	for(k = 0; k < tailleDN; k++)
 	{
 		XL[k] =
 			somme2(

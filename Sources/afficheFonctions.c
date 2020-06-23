@@ -2,12 +2,20 @@
 #define PIXELS_PAR_UNITES 100
 #define flatTreshold 15
 
+
+#include <conio.h>
+#ifdef _MSC_VER
+#define getch() _getch()
+#define getche() _getche()
+#endif
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
 #include "image.h"
+#include "signal.h"
 #include "afficheFonctions.h"
 
 void initialiseRepereCentre(Image* ptr_image)
@@ -86,6 +94,16 @@ void printTrace(trace graph)
 	}
 }
 
+void reduceTrace(trace* ptr_graph, float divider)
+{
+	int i;
+	for (i = 0; i < ptr_graph->nbValeurs; i++)
+	{
+		ptr_graph->valeurs[i] = ptr_graph->valeurs[i] / divider;
+	}
+	minMax(ptr_graph);
+}
+
 void flatTrace(trace *ptr_graph, int treshold)
 {
 	int i;
@@ -106,10 +124,43 @@ void flatTrace(trace *ptr_graph, int treshold)
 			}
 }
 
-void traceFonction(trace fonction, char *fichier)
+void truncate(trace* function, unsigned short int plainPercentageKept)
 {
-	flatTrace(&fonction, flatTreshold);
-	printTrace(fonction);
+	if(plainPercentageKept != 0)
+	{
+		float percentageDropped = (double)(100 - plainPercentageKept) / 100.0;
+		unsigned int
+			begin = (double)function->nbValeurs * (double)percentageDropped / 2.0,
+			end = function->nbValeurs - begin,
+			length = end - begin,
+			i,
+			cursor;
+
+		double* temp = safeMalloc(sizeof(double) * length, "truncate/temp");
+
+		for (i = 0, cursor = begin; i < length; i++, cursor++)
+		{
+			temp[i] = function->valeurs[cursor];
+		}
+
+		free(function->valeurs);
+		function->valeurs = temp;
+		minMax(function);
+	}
+	else if (plainPercentageKept >= 100)
+	{
+		printf("<truncate> Error: percentageKept must be below 100");
+	}
+}
+
+void traceFonction(trace fonction, char *fichier, bool temporal)
+{
+	//flatTrace(&fonction, flatTreshold);
+	if (!temporal)
+	{
+		reduceTrace(&fonction, 100000.0); //reduceTrace(&fonction, 10000.0);
+		//truncate(&fonction, 90);
+	}
 
 	//Création de l'image
 	int 
@@ -121,13 +172,13 @@ void traceFonction(trace fonction, char *fichier)
 	//Insertion du repère
 	initialiseRepereCentre(ptr_image);
 	
-	int pixelAbcisse, pixelOrdonneePrecedentTrace = (int)(fonction.valeurs[0] * PIXELS_PAR_UNITES) + axeAbcisse;
+	int pixelAbcisse, pixelOrdonneePrecedentTrace = (int)(fonction.valeurs[0] * PIXELS_PAR_UNITES) + axeAbcisse * (int)temporal;
 	//printf("<traceFonction> [0;%d]\n\n", pixelOrdonneePrecedentTrace);
 	for(pixelAbcisse = 0; pixelAbcisse < fonction.nbValeurs; pixelAbcisse++)
 	{
-		int 
+		int
 			pixelOrdonnee = (int)(fonction.valeurs[pixelAbcisse] * PIXELS_PAR_UNITES),
-			pixelOrdonneeTrace = pixelOrdonnee + axeAbcisse;
+			pixelOrdonneeTrace = pixelOrdonnee + axeAbcisse * (int)temporal;
 			
 		//printf("<traceFonction> [%d;%d]\n", pixelAbcisse, pixelOrdonneeTrace);
 		

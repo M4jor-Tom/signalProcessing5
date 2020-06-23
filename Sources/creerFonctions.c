@@ -24,6 +24,8 @@ int signalCarre(double x, int max)
 void minMax(trace *ptr_graph)
 {
 	int i;
+	ptr_graph->vMin = ptr_graph->valeurs[0];
+	ptr_graph->vMax = ptr_graph->valeurs[0];
 	for(i = 0; i < ptr_graph -> nbValeurs; i++)
 	{
 		ptr_graph -> vMin = ptr_graph -> valeurs[i] < ptr_graph -> vMin
@@ -34,6 +36,8 @@ void minMax(trace *ptr_graph)
 			? ptr_graph -> valeurs[i]
 			: ptr_graph -> vMax;
 	}
+	ptr_graph->vMin--;
+	ptr_graph->vMax++;
 }
 
 trace valeursFonction(int fonction, double frequence, int nbPeriodes)

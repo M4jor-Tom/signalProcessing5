@@ -11,7 +11,7 @@ float **tcdxN_vers_xpxi(float *xN, int N)
 {
 	//Init
 	Complexe 
-		*xNCplx = (Complexe *)safeMalloc(sizeof(Complexe) * N),
+		*xNCplx = (Complexe *)safeMalloc(sizeof(Complexe) * N, "tcdxN_vers_xpxi"),
 		**retCplx = NULL;
 		
 	int i;
@@ -26,10 +26,10 @@ float **tcdxN_vers_xpxi(float *xN, int N)
 	_free(xNCplx);
 	
 	//Return
-	float **xpxi = (float **)safeMalloc(sizeof(float *) * 2);
+	float **xpxi = (float **)safeMalloc(sizeof(float *) * 2, "tcdxN_vers_xpxi");
 	
-	xpxi[0] = (float *)safeMalloc(sizeof(float) * N / 2);
-	xpxi[1] = (float *)safeMalloc(sizeof(float) * N / 2);
+	xpxi[0] = (float *)safeMalloc(sizeof(float) * N / 2, "tcdxN_vers_xpxi");
+	xpxi[1] = (float *)safeMalloc(sizeof(float) * N / 2, "tcdxN_vers_xpxi");
 	
 	for(i = 0; i < N; i++)
 	{
@@ -48,13 +48,13 @@ float **tcdxN_vers_xpxi(float *xN, int N)
 
 float **tcdTN(int N, int inverse)
 {
-	float **headers = (float **)safeMalloc(sizeof(Complexe *) * N);
+	float **headers = (float **)safeMalloc(sizeof(Complexe *) * N, "tcdTN");
 	
 	int k;
 	for(k = 0; k < N; k++)
 	{
 		int n;
-		headers[k] = (float *)safeMalloc(sizeof(Complexe) * N);
+		headers[k] = (float *)safeMalloc(sizeof(Complexe) * N, "tcdTN");
 		for(n = 0; n < N; n++)
 		{
 			headers[k][n] = tcdW(k * n, N, inverse);

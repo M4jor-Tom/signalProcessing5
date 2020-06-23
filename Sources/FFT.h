@@ -2,4 +2,4 @@
 #include "signal.h"
 
 //génère une FFT
-Complexe *FFT(Complexe *xN, int taille, int inverse);
+Complexe *FFT(Complexe *xN, int taille, int inverse, int tailleMax);

@@ -5,7 +5,7 @@ typedef struct Complexe
 	float reel, imaginaire;
 }Complexe;
 
-void *safeMalloc(int sizeof_);
+void* safeMalloc(int sizeof_, char* parent);
 
 void _free(void *ptr);
 

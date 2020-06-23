@@ -1,4 +1,9 @@
 #define PI 3.14156
+#include <conio.h>
+#ifdef _MSC_VER
+#define getch() _getch()
+#define getche() _getche()
+#endif
 
 #include <math.h>
 #include <stdio.h>
@@ -7,12 +12,12 @@
 #include "signal.h"
 
 
-void *safeMalloc(int sizeof_)
+void *safeMalloc(int sizeof_, char *parent)
 {
 	void *ptr = malloc(sizeof_);
 	if(ptr == NULL)
 	{
-		printf("<safeMalloc> Error: NULL return");
+		printf("<safeMalloc> Error in %s: NULL return", parent);
 		exit(1);
 	}
 	return ptr;
@@ -129,11 +134,11 @@ Complexe **produitMat(Complexe **a, unsigned int Ha, unsigned int La, Complexe *
 		//Operer si les matrices ont des dimensions propices au produit
 		//printf("<produitMat> execute\n");
 		//Allocation de la mémoire à la valeur de return
-		ret = (Complexe **)safeMalloc(sizeof(Complexe *) * Ha);
+		ret = (Complexe **)safeMalloc(sizeof(Complexe *) * Ha, "");
 		//printf("<produitMat> safeMalloc inter okay\n");
 		for(H = 0; H < Ha; H++)
 			//Pour chaque ligne de la matrice a, allouer la mémoire
-			ret[H] = (Complexe *)safeMalloc(sizeof(Complexe) * Lb);
+			ret[H] = (Complexe *)safeMalloc(sizeof(Complexe) * Lb, "");
 		//printf("<produitMat> safeMalloc okay\n");
 		
 		for(L = 0; L < Lb; L++)
@@ -156,10 +161,29 @@ Complexe **produitMat(Complexe **a, unsigned int Ha, unsigned int La, Complexe *
 						somme2(
 							somme,
 							produit2(
-								a[prodLH][H],
-								b[L][prodLH]
+								a[H][prodLH],
+								b[prodLH][L]
 							)
 						);
+					/*if (Lb != Ha)
+					{
+						printf("\nprod: ");
+						printComplexe(
+								a[H][prodLH]
+						);
+						printf(" X ");
+						printComplexe(
+								b[prodLH][L]
+						);
+						printf(" = ");
+						printComplexe(
+							produit2(
+								a[H][prodLH],
+								b[prodLH][L]
+							)
+						);
+						getch();
+					}*/
 				}
 				ret[H][L] = somme;
 			}
@@ -187,8 +211,8 @@ Complexe W(float kn, int N, int inverse)
 
 Complexe *DN(int N, int *nb)
 {
-	*nb = (N / 2) - 1;
-	Complexe *wN = (Complexe *)safeMalloc(sizeof(Complexe) * *nb);
+	*nb = (N / 2);
+	Complexe *wN = (Complexe *)safeMalloc(sizeof(Complexe) * *nb, "");
 	
 	int i;
 	for(i = 0; i < *nb; i++)
@@ -201,13 +225,13 @@ Complexe *DN(int N, int *nb)
 
 Complexe **TN(int N, int inverse)
 {
-	Complexe **headers = (Complexe **)safeMalloc(sizeof(Complexe *) * N);
+	Complexe **headers = (Complexe **)safeMalloc(sizeof(Complexe *) * N, "");
 	
 	int k;
 	for(k = 0; k < N; k++)
 	{
 		int n;
-		headers[k] = (Complexe *)safeMalloc(sizeof(Complexe) * N);
+		headers[k] = (Complexe *)safeMalloc(sizeof(Complexe) * N, "");
 		for(n = 0; n < N; n++)
 		{
 			headers[k][n] = W(k * n, N, inverse);
@@ -247,9 +271,9 @@ Complexe **xN_vers_xpxi(Complexe *xN, int N)
 		nxi = 0;
 		
 	Complexe
-		*xp = (Complexe *)safeMalloc(sizeof(Complexe) * N / 2),
-		*xi = (Complexe *)safeMalloc(sizeof(Complexe) * N / 2),
-		**xpxi = (Complexe **)safeMalloc(sizeof(Complexe *) * 2);
+		*xp = (Complexe *)safeMalloc(sizeof(Complexe) * N / 2, ""),
+		*xi = (Complexe *)safeMalloc(sizeof(Complexe) * N / 2, ""),
+		**xpxi = (Complexe **)safeMalloc(sizeof(Complexe *) * 2, "");
 		
 	xpxi[0] = xp;
 	xpxi[1] = xi;
@@ -275,19 +299,19 @@ Complexe **XPXI_vers_XLXH(Complexe *XP, Complexe *XI, int N, int inverse)
 		tailleDN = 0;
 	Complexe
 		*Dn = DN(N, &tailleDN),
-		**DnMat = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleDN),
+		**DnMat = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleDN, ""),
 		**TnDemi = TN(N, inverse),
 		**TnDemiParxp = NULL,
-		*XL = (Complexe *)safeMalloc(sizeof(Complexe) * tailleDN),
-		*XH = (Complexe *)safeMalloc(sizeof(Complexe) * tailleDN),
-		**XLXH = (Complexe **)safeMalloc(sizeof(Complexe *) * 2),
+		*XL = (Complexe *)safeMalloc(sizeof(Complexe) * tailleDN, ""),
+		*XH = (Complexe *)safeMalloc(sizeof(Complexe) * tailleDN, ""),
+		**XLXH = (Complexe **)safeMalloc(sizeof(Complexe *) * 2, ""),
 		*xp = NULL,
 		*xi = NULL,
 		**xpxi = NULL;
 	for(i = 0; i < tailleDN; i++)
 	{
 		//On met Dn sous forme Complexe ** pour pouvoir faire un produi matriciel
-		DnMat[i] = (Complexe *)safeMalloc(sizeof(Complexe) * tailleDN);
+		DnMat[i] = (Complexe *)safeMalloc(sizeof(Complexe) * tailleDN, "");
 		
 		//On met toutes les valeurs de la matrice à 0
 		//memset(&DnMat[i], 0, sizeof(Complexe) * tailleDN);
@@ -306,30 +330,31 @@ Complexe **XPXI_vers_XLXH(Complexe *XP, Complexe *XI, int N, int inverse)
 	XLXH[1] = XH;
 	
 	Complexe 
-		**xiMat = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleDN),
-		**xpMat = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleDN);
+		**xiMat = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleDN, ""),
+		**xpMat = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleDN, "");
 	
 	for(i = 0; i < tailleDN; i++)
 	{
-		xiMat[i] = (Complexe *)safeMalloc(sizeof(Complexe));
+		xiMat[i] = (Complexe *)safeMalloc(sizeof(Complexe), "");
 		xiMat[i][0].reel = XI[i].reel;
 		xiMat[i][0].imaginaire = XI[i].imaginaire;
 		
-		xpMat[i] = (Complexe *)safeMalloc(sizeof(Complexe));
+		xpMat[i] = (Complexe *)safeMalloc(sizeof(Complexe), "");
 		xpMat[i][0].reel = XP[i].reel;
 		xpMat[i][0].imaginaire = XP[i].imaginaire;
 	}
+
 	
 	//Calcul préliminaire des matrices
 	//printf("\n<XPXI_vers_XLXH> PRODUITMAT1 (%d)\n", tailleDN);
 	TnDemiParxp = produitMat(TnDemi, tailleDN, tailleDN, xpMat, tailleDN, 1);
-	
+
 	//printf("<XPXI_vers_XLXH> PRODUITMAT2 (%d)\n", tailleDN);
 	Complexe **DnParTnDemi = produitMat(DnMat, tailleDN, tailleDN, TnDemi, tailleDN, tailleDN);
-	
+
 	//printf("<XPXI_vers_XLXH> PRODUITMAT3 (%d)\n", tailleDN);
 	Complexe **DnParTnDemiParxi = produitMat(DnParTnDemi, tailleDN, tailleDN, xiMat, tailleDN, 1);
-	
+
 	//Calcul de XL et XH
 	for(k = 0; k < tailleDN; k++)
 	{

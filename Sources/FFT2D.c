@@ -1,4 +1,6 @@
 #include <conio.h>
+#include <stdio.h>
+#define PROGRESSBAR
 
 #include "FFT.h"
 #include "FFT2D.h"
@@ -12,16 +14,60 @@ Complexe **FFT2D(Complexe **xN, int tailleL, int tailleH, int inverse, int taill
 	Complexe **XN = (Complexe **)safeMalloc(sizeof(Complexe *) * tailleH, "FFT2D");
 	
 	int i;
+	#ifdef PROGRESSBAR
+		int j;
+	#endif
 	for(i = 0; i < tailleH; i++)
 	{
 		XN[i] = (Complexe *)safeMalloc(sizeof(Complexe) * tailleL, "FFT2D");
 		XN[i] = FFT(xN[i], tailleL, inverse, tailleMax);
+		#ifdef PROGRESSBAR
+			int barumsMaxCount = 50;
+			float
+				progress = 0.0,
+				barumsCount = 0.0;
+
+			printf("\rPhase 1/2: ");
+			for (j = 0; j < barumsMaxCount; j++)
+			{
+				progress = (float)i / (float)tailleH;
+				barumsCount = progress * (float)barumsMaxCount;
+
+				if (j < barumsCount)
+					printf("%c", 178);
+				else
+					printf("%c", 176);
+			}
+		#endif
 	}
 	
 	XN = transposee(XN, tailleH, tailleL);
+	#ifdef PROGRESSBAR
+		printf("\n");
+	#endif
 
-	for(i = 0; i < tailleL; i++)
+	for (i = 0; i < tailleL; i++)
+	{
 		XN[i] = FFT(xN[i], tailleH, inverse, tailleMax);
+		#ifdef PROGRESSBAR
+			int barumsMaxCount = 50;
+			float
+				progress = 0.0,
+				barumsCount = 0.0;
+
+			printf("\rPhase 2/2: ");
+			for (j = 0; j < barumsMaxCount; j++)
+			{
+				progress = (float)i / (float)tailleH;
+				barumsCount = progress * (float)barumsMaxCount;
+
+				if (j < barumsCount)
+					printf("%c", 178);
+				else
+					printf("%c", 176);
+			}
+		#endif
+	}
 	
 	return XN;
 }

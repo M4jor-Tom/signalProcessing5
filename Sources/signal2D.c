@@ -6,12 +6,12 @@
 void traceFonctions2D(trace *fonction, char *fichier, int axe, bool temporal)
 {
 	//Pre-treatment
-	/*if(!temporal)
+	if(!temporal)
 	{
 		unsigned int i, originalWidth = fonction[0].nbValeurs;
 		for (i = 0; i < originalWidth; i++)
-			truncate(&fonction[i], 70);
-	}*/
+			truncate(&fonction[i], 50);
+	}
 
 	//Création de l'image
 	Image* ptr_image = alloueImage(fonction[0].nbValeurs, fonction[0].nbValeurs);

@@ -1,5 +1,5 @@
 #define PI 3.14156
-#define PROGRESSBAR
+//#define PROGRESSBAR
 
 #include <stdio.h>
 #include <stdlib.h>

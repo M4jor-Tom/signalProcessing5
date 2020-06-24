@@ -24,16 +24,11 @@ Image* circleTruncate(Image* input, unsigned int rInf, unsigned int rSup, bool e
 		for(y = 0; y < input -> hauteur; y++)
 			for (x = 0; x < input -> largeur; x++)
 			{
-				float distanceWithCenter = distance(x - centerAbcissa, y - centerOrdinate);
+				float distanceWithCenter = distance(abs(x - centerAbcissa), abs(y - centerOrdinate));
 				if(
-					distanceWithCenter < rSup && distanceWithCenter > rInf && !exclude ||	//In zone, AND must clear elsewhere OR
-					distanceWithCenter > rSup && distanceWithCenter < rInf && exclude		//Out of zone, AND must clear In
+					distanceWithCenter < rSup && distanceWithCenter > rInf && exclude ||	//IN zone, AND must clear IN OR
+					(distanceWithCenter > rSup || distanceWithCenter < rInf) && !exclude	//OUT of zone, AND must clear OUT
 				)
-				{
-					//Here, must reproduce image
-
-				}
-				else
 				{
 					//Here, must clear image
 					input->rouge[y][x] = 0;

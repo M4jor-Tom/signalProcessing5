@@ -156,7 +156,6 @@ void truncate(trace* function, unsigned short int plainPercentageKept)
 
 void traceFonction(trace fonction, char *fichier, bool temporal)
 {
-	//flatTrace(&fonction, flatTreshold);
 	if(!temporal)
 	{
 		reduceTrace(&fonction, 100000.0);

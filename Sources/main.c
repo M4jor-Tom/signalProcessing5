@@ -37,6 +37,7 @@ int main()
 {
 	system("color F0");
 
+	Image* imagePtr;
 	FILE* testFilePtr;
 	trace 
 		temporalGraph,
@@ -53,7 +54,9 @@ int main()
 		imageHeight = 0,
 		imageWidth = 0,
 		outPutHeight = 0,
-		outPutWidth = 0;
+		outPutWidth = 0,
+		inputInfTruncature = 0,
+		inputSupTruncature = 0;
 	int periodsCount, i, j;
 	char fileName[1000] = "\0";
 	short int 
@@ -63,8 +66,11 @@ int main()
 		axis = horizontal;
 	bool 
 		leave = false,
-		getFft = true,
-		grabParameters = true;
+		workFfts = true,
+		grabParameters = true,
+		truncateInput = false,
+		excludeZone = false,
+		truncateModeSet = false;
 
 	memset(&temporalGraph, 0, sizeof(trace));
 	memset(&fftGraph, 0, sizeof(trace));
@@ -83,7 +89,7 @@ int main()
 				printf("\rPlease re-select: ");
 			else printf("Please select: ");
 			redo = false;
-			getFft = true;
+			workFfts = true;
 
 			//Processing query
 			switch (getche())
@@ -92,11 +98,11 @@ int main()
 				case '1':
 				case '&':
 					//Wanted temporal
-					getFft = false;
+					workFfts = false;
 
 				case '2':
 				case 'é':
-					if (getFft)
+					if (workFfts)
 					{
 						printf("\n\nWork from:\n1.Parameters set\n2.Existing file\n");
 						do
@@ -152,6 +158,94 @@ int main()
 											case '2':
 											case 'é':
 												reverse = 1;
+												printf("\n\nCircularly truncate FFT before processing ?\n1.No\n2.Yes\n");
+												do
+												{
+													if (redo)
+														printf("\rPlease re-select: ");
+													else printf("Please select: ");
+													redo = false;
+
+													switch (getche())
+													{
+														case '1':
+														case '&':
+															truncateInput = false;
+															break;
+
+														case '2':
+														case 'é':
+															truncateInput = true;
+															printf("\n\nCircular truncation:\n1.Keep circle\n2.Exclude circle\n3.Keep band\n4.Exlude band\n");
+															do
+															{
+																if (redo)
+																	printf("\rPlease re-select: ");
+																else printf("Please select: ");
+																redo = false;
+
+																switch (getche())
+																{
+																	case '3':
+																	case '"':
+																		if (!truncateModeSet)
+																		{
+																			excludeZone = false;
+																			truncateModeSet = true;
+																		}
+																	case '4':
+																	case '\'':
+																		if (!truncateModeSet) 
+																		{
+																			excludeZone = true;
+																			truncateModeSet = true;
+																		}
+																		printf("\nInferior ray (pixels)\n");
+																		scanf("%u", &inputInfTruncature);
+																		getchar();
+																		inputInfTruncature = biggestSmallerBits(inputInfTruncature);
+																		printf("Reduce to 2^N inferior ray (pixels): %u", inputInfTruncature);
+																	case '1':
+																	case '&':
+																		if (!truncateModeSet) 
+																		{
+																			excludeZone = false;
+																			truncateModeSet = true;
+																		}
+																	case '2':
+																	case 'é':
+																		if (!truncateModeSet) 
+																		{
+																			excludeZone = true;
+																			truncateModeSet = true;
+																		}
+																		printf("\nSuperior ray (pixels)\n");
+																		scanf("%u", &inputSupTruncature);
+																		getchar();
+																		inputSupTruncature = biggestSmallerBits(inputSupTruncature);
+																		printf("Reduce to 2^N superior ray (pixels): %u", inputSupTruncature);
+
+																		if (inputInfTruncature >= inputSupTruncature)
+																		{
+																			truncateModeSet = false;
+																			redo = true;
+																			printf("\nAn error occured during data acquirement.\n");
+																		}
+
+																		break;
+
+																	default:
+																		redo = true;
+																}
+
+															} while (redo);
+															break;
+
+														default:
+															redo = true;
+													}
+
+												} while (redo);
 												break;
 
 											default:
@@ -271,13 +365,30 @@ int main()
 					else
 					{
 						//Get graph from file
+						if(truncateInput)
+						{
+							//Load
+							imagePtr = chargeImage(fileName);
+
+							//Process
+							imagePtr = circleTruncate(imagePtr, inputInfTruncature, inputSupTruncature, excludeZone);
+
+							//Rename
+							strcpy(fileName, "truncatedFT.bmp");
+
+							//Save
+							sauveImage(imagePtr, fileName);
+							libereImage(&imagePtr);
+							printf("\n You can check truncature (%s in main file)\n\t->\n", fileName);
+							getch();
+						}
 						xN2D = imageVersComplexe(fileName, &imageHeight, &imageWidth);
 						dimensions = 2;
 						outPutWidth = imageWidth;
 						outPutHeight = imageWidth;
 					}
 
-					if(getFft)
+					if(workFfts)
 						outPutWidth = biggestSmallerBits(outPutWidth);
 
 
@@ -286,7 +397,7 @@ int main()
 						//1D
 						xN = safeMalloc(sizeof(Complexe) * temporalGraph.nbValeurs, "main/xN 1D");
 
-						if(getFft)
+						if(workFfts)
 						{
 							//FFT
 							//Initialize FFT values
@@ -310,14 +421,14 @@ int main()
 
 							//Prepare and trace
 							minMax(&fftGraph);
-							traceFonction(fftGraph, "graph.bmp", !getFft);
+							traceFonction(fftGraph, "graph.bmp", !workFfts);
 
 							//Free memory
 							free(XN);
 						}
 						else
 							//TEMP
-							traceFonction(temporalGraph, "graph.bmp", !getFft);
+							traceFonction(temporalGraph, "graph.bmp", !workFfts);
 
 						free(xN);
 					}
@@ -342,7 +453,7 @@ int main()
 
 						}
 
-						if (getFft)
+						if(workFfts)
 						{
 							//FFT
 							XN2D = FFT2D(xN2D, outPutWidth, outPutWidth, reverse, outPutWidth);
@@ -356,7 +467,7 @@ int main()
 								for(j = 0; j < fftGraph2D[i].nbValeurs; j++)
 									fftGraph2D[i].valeurs[j] = raison(XN2D[i][j]);
 								minMax(&fftGraph2D[i]);
-
+								free(XN2D[i]);
 							}
 							traceFonctions2D(fftGraph2D, "graph.bmp", axis, false);
 						}
@@ -373,7 +484,7 @@ int main()
 							for (i = 0; i < outPutWidth; i++)
 								temporalGraph2D[i] = temporalGraph;
 
-							traceFonctions2D(temporalGraph2D, "graph.bmp", axis, !getFft);
+							traceFonctions2D(temporalGraph2D, "graph.bmp", axis, !workFfts);
 						}
 
 						if(xN2D != NULL)

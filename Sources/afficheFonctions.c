@@ -132,13 +132,14 @@ void truncate(trace* function, unsigned short int plainPercentageKept)
 		unsigned int
 			begin = (double)function->nbValeurs * (double)percentageDropped / 2.0,
 			end = function->nbValeurs - begin,
-			length = end - begin,
 			i,
 			cursor;
 
-		double* temp = safeMalloc(sizeof(double) * length, "truncate/temp");
+		function->nbValeurs = end - begin;
 
-		for (i = 0, cursor = begin; i < length; i++, cursor++)
+		double* temp = safeMalloc(sizeof(double) * function->nbValeurs, "truncate/temp");
+
+		for (i = 0, cursor = begin; i < function->nbValeurs; i++, cursor++)
 		{
 			temp[i] = function->valeurs[cursor];
 		}
@@ -156,10 +157,10 @@ void truncate(trace* function, unsigned short int plainPercentageKept)
 void traceFonction(trace fonction, char *fichier, bool temporal)
 {
 	//flatTrace(&fonction, flatTreshold);
-	if (!temporal)
+	if(!temporal)
 	{
-		reduceTrace(&fonction, 100000.0); //reduceTrace(&fonction, 10000.0);
-		//truncate(&fonction, 90);
+		reduceTrace(&fonction, 100000.0);
+		truncate(&fonction, 90);
 	}
 
 	//Création de l'image
@@ -169,8 +170,10 @@ void traceFonction(trace fonction, char *fichier, bool temporal)
 		axeAbcisse = hauteurImagePixels / 2;
 		
 	Image* ptr_image = alloueImage(largeurImagePixels, hauteurImagePixels);
-	//Insertion du repère
-	initialiseRepereCentre(ptr_image);
+
+	if(temporal)
+		//Insertion du repère
+		initialiseRepereCentre(ptr_image);
 	
 	int pixelAbcisse, pixelOrdonneePrecedentTrace = (int)(fonction.valeurs[0] * PIXELS_PAR_UNITES) + axeAbcisse * (int)temporal;
 	//printf("<traceFonction> [0;%d]\n\n", pixelOrdonneePrecedentTrace);

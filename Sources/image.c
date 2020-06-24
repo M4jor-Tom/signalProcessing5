@@ -3,7 +3,52 @@
 #include <math.h>
 #include "BmpLib.h"
 #include "OutilsLib.h"
+#include "signal.h"
 #include "image.h"
+
+double distance(double xDelta, double yDelta)
+{
+	return sqrt(xDelta * xDelta + yDelta * yDelta);
+}
+
+Image* circleTruncate(Image* input, unsigned int rInf, unsigned int rSup, bool exclude)
+{
+	if (rSup > rInf)
+	{
+		unsigned int
+			x,
+			y,
+			centerAbcissa = input->largeur / 2,
+			centerOrdinate = input->hauteur / 2;
+
+		for(y = 0; y < input -> hauteur; y++)
+			for (x = 0; x < input -> largeur; x++)
+			{
+				float distanceWithCenter = distance(x - centerAbcissa, y - centerOrdinate);
+				if(
+					distanceWithCenter < rSup && distanceWithCenter > rInf && !exclude ||	//In zone, AND must clear elsewhere OR
+					distanceWithCenter > rSup && distanceWithCenter < rInf && exclude		//Out of zone, AND must clear In
+				)
+				{
+					//Here, must reproduce image
+
+				}
+				else
+				{
+					//Here, must clear image
+					input->rouge[y][x] = 0;
+					input->vert[y][x] = 0;
+					input->bleu[y][x] = 0;
+					input->gris[y][x] = 0;
+				}
+			}
+	}
+	else
+	{
+		printf("<circleTruncate> Warning: Inferior ray must be inferior than superior. Input returned.\n");
+	}
+	return input;
+}
 
 Image* alloueImage(int largeur, int hauteur)
 {
@@ -12,20 +57,20 @@ Image* alloueImage(int largeur, int hauteur)
 	int allocHauteur = sizeof(short*) * hauteur;	//Contiendra les en-têtes de chaque ligne
 
 	//Allocation de mémoire
-	Image* ptr_image = (Image *)safeMalloc(sizeof(Image));
-	ptr_image->rouge = (short **)safeMalloc(allocHauteur);
-	ptr_image->vert = (short **)safeMalloc(allocHauteur);
-	ptr_image->bleu = (short **)safeMalloc(allocHauteur);
-	ptr_image->gris = (short **)safeMalloc(allocHauteur);
+	Image* ptr_image = (Image *)safeMalloc(sizeof(Image), "alloueImage/couleur");
+	ptr_image->rouge = (short **)safeMalloc(allocHauteur, "alloueImage/couleur");
+	ptr_image->vert = (short **)safeMalloc(allocHauteur, "alloueImage/couleur");
+	ptr_image->bleu = (short **)safeMalloc(allocHauteur, "alloueImage/couleur");
+	ptr_image->gris = (short **)safeMalloc(allocHauteur, "alloueImage/couleur");
 
 	int h;
 	for (h = 0; h < hauteur; h++)
 	{
 		//Pour chaque ligne
-		ptr_image->rouge[h] = (short *)safeMalloc(allocLargeur);
-		ptr_image->vert[h] = (short *)safeMalloc(allocLargeur);
-		ptr_image->bleu[h] = (short *)safeMalloc(allocLargeur);
-		ptr_image->gris[h] = (short *)safeMalloc(allocLargeur);
+		ptr_image->rouge[h] = (short *)safeMalloc(allocLargeur, "alloueImage/couleur[]");
+		ptr_image->vert[h] = (short *)safeMalloc(allocLargeur, "alloueImage/couleur[]");
+		ptr_image->bleu[h] = (short *)safeMalloc(allocLargeur, "alloueImage/couleur[]");
+		ptr_image->gris[h] = (short *)safeMalloc(allocLargeur, "alloueImage/couleur[]");
 	}
 
 	//Set des paramètres
@@ -72,7 +117,7 @@ Image* chargeImage(char* nom)
 	DonneesImageRGB* ptr_donneesImage = lisBMPRGB(nom);
 	Image* ptr_image = 
 		alloueImage(
-			ptr_donneesImage -> largeurImage, 
+			ptr_donneesImage -> largeurImage,
 			ptr_donneesImage -> hauteurImage
 		);
 
@@ -82,22 +127,24 @@ Image* chargeImage(char* nom)
 		for (pixel = 0; pixel < ptr_donneesImage -> largeurImage; pixel++, totalPixel++)
 		{
 			//h est un en-tête de ligne, il y en a autant que de lignes, donc c'est une hauteur
-			ptr_image -> bleu = ptr_donneesImage -> donneesRGB[totalPixel * 3];
-			ptr_image -> vert = ptr_donneesImage -> donneesRGB[totalPixel * 3 + 1];
-			ptr_image -> rouge = ptr_donneesImage -> donneesRGB[totalPixel * 3 + 2];
-			ptr_image -> gris[h][pixel] =	
-				0.2125 * (ptr_image->rouge[h][pixel]) +
-				0.7154 * (ptr_image->vert[h][pixel]) + 
-				0.0721 * (ptr_image->bleu[h][pixel]);
+			ptr_image -> bleu[h][pixel] = ptr_donneesImage -> donneesRGB[totalPixel * 3];
+			ptr_image -> vert[h][pixel] = ptr_donneesImage -> donneesRGB[totalPixel * 3 + 1];
+			ptr_image -> rouge[h][pixel] = ptr_donneesImage -> donneesRGB[totalPixel * 3 + 2];
+			ptr_image -> gris[h][pixel] =
+				0.2125 * (double)(ptr_image->rouge[h][pixel]) +
+				0.7154 * (double)(ptr_image->vert[h][pixel]) +
+				0.0721 * (double)(ptr_image->bleu[h][pixel]);
 		}
+
+	return ptr_image;
 }
 
 void sauveImage(Image* monImage, char* nom)
 {
-	DonneesImageRGB* ptr_donneesImage = (DonneesImageRGB *)safeMalloc(sizeof(DonneesImageRGB));
+	DonneesImageRGB* ptr_donneesImage = (DonneesImageRGB *)safeMalloc(sizeof(DonneesImageRGB), "");
 	int nIndex = 0;
 
-	ptr_donneesImage -> donneesRGB = (short *)safeMalloc(sizeof(short) * monImage -> hauteur * monImage -> largeur * 3);
+	ptr_donneesImage -> donneesRGB = (unsigned char *)safeMalloc(sizeof(short) * monImage -> hauteur * monImage -> largeur * 3, "");
 
 	int h, l;
 	for(h = 0; h < monImage -> hauteur; h++)
@@ -117,10 +164,10 @@ void sauveImage(Image* monImage, char* nom)
 
 void sauveImageNG(Image* monImage, char* nom)
 {
-	DonneesImageRGB* ptr_donneesImage = (DonneesImageRGB *)safeMalloc(sizeof(DonneesImageRGB));
+	DonneesImageRGB* ptr_donneesImage = (DonneesImageRGB *)safeMalloc(sizeof(DonneesImageRGB), "");
 	int nIndex = 0;
 
-	ptr_donneesImage->donneesRGB = (short *)safeMalloc(sizeof(short) * monImage->hauteur * monImage->largeur * 3);
+	ptr_donneesImage->donneesRGB = (short *)safeMalloc(sizeof(short) * monImage->hauteur * monImage->largeur * 3, "");
 
 	int h, l;
 	for (h = 0; h < monImage->hauteur; h++)

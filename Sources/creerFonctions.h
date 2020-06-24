@@ -15,7 +15,7 @@ void minMax(trace *ptr_graph);
 //Remplit une variable trace des valeurs d'une fonction, ainsi que les informations nécessaires à toutes actions avec cette variable
 trace valeursFonction(int fonction, double frequence, int nbPeriodes);
 
-//Pareil qu'au dessus, mais dans une matrice carrée. Chaque ligne est un résultat.
+//Pareil qu'au dessus, mais dans un vecteur de trace, comparable à une matrice. Chaque ligne est un résultat.
 trace *valeursMat(int fonction, double frequence, int nbPeriodes);
 
 void libereTrace(trace *cible);

@@ -6,6 +6,8 @@
 	#define getche() _getche()
 #endif
 
+#define PIXELS_PAR_UNITES 100
+
 #define PI 3.1415
 
 #define SINUS 0
@@ -35,19 +37,25 @@ int main()
 {
 	system("color F0");
 
-	Complexe
-		*xN = NULL,
-		*XN = NULL,
-		**xN2D = NULL,
-		**XN2D = NULL;
+	FILE* testFilePtr;
 	trace 
 		temporalGraph,
 		fftGraph,
 		*temporalGraph2D = NULL,
 		*fftGraph2D = NULL;
+	Complexe
+		*xN = NULL,
+		*XN = NULL,
+		**xN2D = NULL,
+		**XN2D = NULL;
 	float frequency;
-	int periodsCount, i;
-	char fileName = "\0";
+	unsigned int
+		imageHeight = 0,
+		imageWidth = 0,
+		outPutHeight = 0,
+		outPutWidth = 0;
+	int periodsCount, i, j;
+	char fileName[1000] = "\0";
 	short int 
 		reverse = 0,
 		dimensions = 1,
@@ -68,7 +76,7 @@ int main()
 		//Grabbing process
 
 		bool redo = false;
-		printf("Output mode:\n1.Temporal signal\n2.Fourier transform\n3.Leave\n\n");
+		printf("Work mode:\n1.Temporal signals\n2.Fourier transform/reversing\n3.Leave\n\n");
 		do
 		{
 			if (redo)
@@ -108,7 +116,23 @@ int main()
 								case '2':
 								case 'é':
 									grabParameters = false;
-									scanf("%s", fileName);
+									printf("\n\nFile name:\n");
+									//Get file name
+									do
+									{
+										if (redo)
+											printf("\rPlease re-select: ");
+										else printf("Please select: ");
+										redo = false;
+
+										scanf("%s", fileName);
+										testFilePtr = fopen(fileName, "r");
+
+										if(testFilePtr == NULL)
+											redo = true;
+										else
+											fclose(testFilePtr);
+									}while(redo);
 
 									printf("\n\nWich process ?\n1.FFT-ize\n2.Reverse FFT\n");
 									do
@@ -241,22 +265,20 @@ int main()
 
 						//Processing graph (bmp file)
 						temporalGraph = valeursFonction(signalForm, frequency, periodsCount);
+						outPutWidth = temporalGraph.nbValeurs;
+						outPutHeight = (temporalGraph.vMax - temporalGraph.vMin) * PIXELS_PAR_UNITES;
 					}
 					else
 					{
 						//Get graph from file
-						if(reverse)
-						{
-							//FFT => Temporal
-
-						}
-						else
-						{
-							//Temporal => FFT
-
-						}
+						xN2D = imageVersComplexe(fileName, &imageHeight, &imageWidth);
+						dimensions = 2;
+						outPutWidth = imageWidth;
+						outPutHeight = imageWidth;
 					}
 
+					if(getFft)
+						outPutWidth = biggestSmallerBits(outPutWidth);
 
 
 					if (dimensions == 1)
@@ -302,35 +324,64 @@ int main()
 					else
 					{
 						//2D
-						xN2D = safeMalloc(sizeof(Complexe *) * temporalGraph.nbValeurs, "main/FFT2D xN");
-						if(getFft)
-							XN2D = safeMalloc(sizeof(Complexe*) * temporalGraph.nbValeurs, "main/FFT2D XN");
-
-						for (i = 0; i < temporalGraph.nbValeurs; i++)
+						if (grabParameters)
 						{
-							xN2D[i] = safeMalloc(sizeof(Complexe) * temporalGraph.nbValeurs, "main/FFT2D xN[]");
-							if (getFft)
-								XN2D[i] = safeMalloc(sizeof(Complexe) * temporalGraph.nbValeurs, "main/FFT2D XN[]");
+							xN2D = safeMalloc(sizeof(Complexe *) * outPutHeight, "main/FFT2D xN");
+							temporalGraph2D = valeursMat(signalForm, frequency, periodsCount);
+
+							if(xN2D != NULL)
+								for (i = 0; i < outPutWidth; i++)
+								{
+									xN2D[i] = safeMalloc(sizeof(Complexe) * outPutWidth, "main/FFT2D xN[]");
+									for (j = 0; j < outPutWidth; j++)
+									{
+										xN2D[i][j].reel = temporalGraph2D[i].valeurs[j];
+										xN2D[i][j].imaginaire = temporalGraph2D[i].valeurs[j];
+									}
+								}
+
 						}
 
 						if (getFft)
 						{
 							//FFT
-							XN2D = FFT2D(xN2D, temporalGraph.nbValeurs, temporalGraph.nbValeurs, reverse);
+							XN2D = FFT2D(xN2D, outPutWidth, outPutWidth, reverse, outPutWidth);
+
+							fftGraph2D = safeMalloc(sizeof(trace) * outPutWidth, "main/FFT 2D graph");
+							for(i = 0; i < outPutWidth; i++)
+							{
+								fftGraph2D[i].nbValeurs = outPutWidth;
+								fftGraph2D[i].valeurs = safeMalloc(sizeof(double) * outPutWidth, "main/FFT 2D graph values");
+
+								for(j = 0; j < fftGraph2D[i].nbValeurs; j++)
+									fftGraph2D[i].valeurs[j] = raison(XN2D[i][j]);
+								minMax(&fftGraph2D[i]);
+
+							}
+							traceFonctions2D(fftGraph2D, "graph.bmp", axis, false);
 						}
 						else
 						{
+							if (!grabParameters)
+							{
+								printf("<main> Something is going to happen, but I don't know what.\n\t- Eminem -\n\n");
+								getch();
+							}
+
 							//TEMP
-							temporalGraph2D = safeMalloc(sizeof(trace) * temporalGraph.nbValeurs, "main/temp2D graph");
-							for (i = 0; i < temporalGraph.nbValeurs; i++)
+							temporalGraph2D = safeMalloc(sizeof(trace) * outPutWidth, "main/temp2D graph");
+							for (i = 0; i < outPutWidth; i++)
 								temporalGraph2D[i] = temporalGraph;
 
-							traceFonctions2D(temporalGraph2D, "graph.bmp", axis);
+							traceFonctions2D(temporalGraph2D, "graph.bmp", axis, !getFft);
 						}
 
-						for (i = 0; i < temporalGraph.nbValeurs; i++)
-							free(xN2D[i]);
-						free(xN2D);
+						if(xN2D != NULL)
+						{
+							for (i = 0; i < outPutWidth; i++)
+								free(xN2D[i]);
+							free(xN2D);
+						}
 					}
 
 					//libereTrace(&temporalGraph);

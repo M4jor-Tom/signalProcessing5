@@ -1,9 +1,18 @@
 #include <stdlib.h>
 
+#include "afficheFonctions.h"
 #include "signal2D.h"
 
-void traceFonctions2D(trace *fonction, char *fichier, int axe)
+void traceFonctions2D(trace *fonction, char *fichier, int axe, bool temporal)
 {
+	//Pre-treatment
+	/*if(!temporal)
+	{
+		unsigned int i, originalWidth = fonction[0].nbValeurs;
+		for (i = 0; i < originalWidth; i++)
+			truncate(&fonction[i], 70);
+	}*/
+
 	//Création de l'image
 	Image* ptr_image = alloueImage(fonction[0].nbValeurs, fonction[0].nbValeurs);
 	
@@ -69,7 +78,7 @@ Complexe **imageVersComplexe(char *baseName, unsigned int *hauteur, unsigned int
 		for(j = 0; j < ptr_image -> largeur; j++)
 		{
 			ret[i][j].reel = ptr_image -> gris[i][j];
-			ret[i][j].imaginaire = 0.0;
+			ret[i][j].imaginaire = ptr_image->gris[i][j];
 		}
 	}
 	

@@ -6,7 +6,7 @@
 #include "afficheFonctions.h"
 #include "signal.h"
 
-void traceFonctions2D(trace *fonction, char *fichier, int axe);
+void traceFonctions2D(trace* fonction, char* fichier, int axe, bool temporal);
 
 //void traceFonction2D(trace fonction, char *fichier, int axe);
 

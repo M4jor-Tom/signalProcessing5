@@ -6,6 +6,7 @@
 #endif
 
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +28,18 @@ void _free(void *ptr)
 {
 	free(ptr);
 	ptr = NULL;
+}
+
+bool random(double proba)
+{
+	unsigned int maxVal = 1000;
+	//maxVal--; //Overflow value
+
+	unsigned int treshold = ((double)maxVal) * proba;
+	int rando = rand() % maxVal;
+	return rando < treshold
+		? true
+		: false;
 }
 
 double argument(Complexe v)

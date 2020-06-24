@@ -1,14 +1,72 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include "BmpLib.h"
 #include "OutilsLib.h"
 #include "signal.h"
+#include "afficheFonctions.h"
 #include "image.h"
+#include "signal.h"
 
 double distance(double xDelta, double yDelta)
 {
 	return sqrt(xDelta * xDelta + yDelta * yDelta);
+}
+
+Image* zeroPadGrid(Image* input)
+{
+	unsigned int y, x, factor = 2;
+	Image* output = alloueImage(biggestSmallerBits(input->largeur) * factor, biggestSmallerBits(input->hauteur) * factor);
+
+	for(y = 0; y < output -> hauteur; y++)
+		for (x = 0; x < output->largeur; x++)
+		{
+			if(x && y)
+			{
+				if(factor % y == 0 && factor % x == 0)
+					tracePoint(output, y, x, "noir", 0);
+				else
+				{
+					output->rouge[y][x] = input->rouge[y / factor][x / factor];
+					output->vert[y][x] = input->vert[y / factor][x / factor];
+					output->bleu[y][x] = input->bleu[y / factor][x / factor];
+					output->gris[y][x] = input->gris[y / factor][x / factor];
+				}
+			}
+			else
+			{
+				output->rouge[y][x] = input->rouge[y / factor][x / factor];
+				output->vert[y][x] = input->vert[y / factor][x / factor];
+				output->bleu[y][x] = input->bleu[y / factor][x / factor];
+				output->gris[y][x] = input->gris[y / factor][x / factor];
+			}
+		}
+
+	return output;
+}
+
+Image* noise(Image* input, double percentage, double saltPerPepper)
+{
+	int x, y;
+	char color[6] = "\0";
+	for(y = 0; y < input -> hauteur; y++)
+		for (x = 0; x < input->largeur; x++)
+		{
+			if (random(percentage))
+			{
+				strcpy(
+					color, random(saltPerPepper)
+					? "blanc"
+					: "noir"
+				);
+
+				tracePoint(input, y, x, color, 0);
+			}
+		}
+	return input;
 }
 
 Image* circleTruncate(Image* input, unsigned int rInf, unsigned int rSup, bool exclude)

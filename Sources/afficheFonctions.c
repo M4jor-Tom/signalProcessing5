@@ -77,6 +77,13 @@ int tracePoint(Image *ptr_image, int pixelOrdonnee, int pixelAbcisse, char *coul
 		ptr_image->vert[pixelOrdonnee][pixelAbcisse] = couleurMini;
 		ptr_image->gris[pixelOrdonnee][pixelAbcisse] = couleurMini;
 	}
+	else if (!strcmp(couleur, "blanc"))
+	{
+		ptr_image->rouge[pixelOrdonnee][pixelAbcisse] = 255;
+		ptr_image->bleu[pixelOrdonnee][pixelAbcisse] = 255;
+		ptr_image->vert[pixelOrdonnee][pixelAbcisse] = 255;
+		ptr_image->gris[pixelOrdonnee][pixelAbcisse] = 255;
+	}
 	else 
 	{
 		printf("<tracePoint> Error: Couleur inconnue: %s", couleur);

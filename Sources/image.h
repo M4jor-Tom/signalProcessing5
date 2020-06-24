@@ -8,6 +8,10 @@ typedef struct Image
 	short **rouge, **vert, **bleu, **gris;
 }Image;
 
+Image* zeroPadGrid(Image* input);
+
+Image* noise(Image *input, double percentage, double saltPerPepper);
+
 Image* circleTruncate(Image* input, unsigned int rInf, unsigned int rSup, bool exclude);
 
 Image* alloueImage(int largeur, int hauteur);

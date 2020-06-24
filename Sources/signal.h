@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 typedef struct Complexe
 {
 	float reel, imaginaire;
@@ -8,6 +10,8 @@ typedef struct Complexe
 void* safeMalloc(int sizeof_, char* parent);
 
 void _free(void *ptr);
+
+bool random(double proba);
 
 //Retrouve l'argument d'un complexe
 double argument(Complexe v);

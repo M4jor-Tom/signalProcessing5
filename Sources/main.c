@@ -32,10 +32,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 int main()
 {
 	system("color F0");
+	srand(time(NULL));
+	int plus = 0, minus = 0;
 
 	Image* imagePtr;
 	FILE* testFilePtr;
@@ -49,7 +52,10 @@ int main()
 		*XN = NULL,
 		**xN2D = NULL,
 		**XN2D = NULL;
-	float frequency;
+	float 
+		frequency,
+		percentage,
+		saltPerPepper;
 	unsigned int
 		imageHeight = 0,
 		imageWidth = 0,
@@ -69,6 +75,8 @@ int main()
 		workFfts = true,
 		grabParameters = true,
 		truncateInput = false,
+		noiseInput = false,
+		pad = false,
 		excludeZone = false,
 		truncateModeSet = false;
 
@@ -153,6 +161,65 @@ int main()
 											case '1':
 											case '&':
 												reverse = 0;
+												printf("\n\n0-Pad before processing ?\n1.No\n2.Yes\n");
+												do
+												{
+													if (redo)
+														printf("\rPlease re-select: ");
+													else printf("Please select: ");
+													redo = false;
+													pad = false;
+
+													switch (getche())
+													{
+													case '2':
+													case 'é':
+														pad = true;
+
+													case '1':
+													case '&':
+														break;
+
+													default:
+														redo = true;
+													}
+
+												} while (redo);
+
+												printf("\n\nAdd noise to Temporal signal before processing ?\n1.No\n2.Yes\n");
+												do
+												{
+													if (redo)
+														printf("\rPlease re-select: ");
+													else printf("Please select: ");
+													redo = false;
+													noiseInput = false;
+
+													switch(getche())
+													{
+														case '2':
+														case 'é':
+															noiseInput = true;
+
+															printf("\nNoise percentage (0 < value < 1): ");
+															scanf("%f", &percentage);
+															percentage = sqrt((double)percentage * (double)percentage);
+															while (percentage > 1.00001) percentage--;
+
+															printf("\nSalt per pepper percentage (0 < value < 1) (1 = White noise): ");
+															scanf("%f", &saltPerPepper);
+															saltPerPepper = sqrt((double)saltPerPepper * (double)saltPerPepper);
+															while (saltPerPepper > 1.00001) saltPerPepper--;
+
+														case '1':
+														case '&':
+															break;
+
+														default:
+															redo = true;
+													}
+
+												}while (redo);
 												break;
 
 											case '2':
@@ -379,9 +446,46 @@ int main()
 							//Save
 							sauveImage(imagePtr, fileName);
 							libereImage(&imagePtr);
-							printf("\n You can check truncature (%s in main file)\n\t->\n", fileName);
+							printf("\nYou can check truncature (%s in main file)\n\t->\n", fileName);
 							getch();
 						}
+
+						if(noiseInput)
+						{
+							//Load
+							imagePtr = chargeImage(fileName);
+
+							//Process
+							imagePtr = noise(imagePtr, percentage, saltPerPepper);
+
+							//Rename
+							strcpy(fileName, "noised.bmp");
+
+							//Save
+							sauveImage(imagePtr, fileName);
+							libereImage(&imagePtr);
+							printf("\nYou can check noise (%s in main file)\n\t->\n", fileName);
+							getch();
+						}
+
+						if(pad)
+						{
+							//Load
+							imagePtr = chargeImage(fileName);
+
+							//Process
+							imagePtr = zeroPadGrid(imagePtr);
+
+							//Rename
+							strcpy(fileName, "padding.bmp");
+
+							//Save
+							sauveImage(imagePtr, fileName);
+							libereImage(&imagePtr);
+							printf("\nYou can check 0-padded (%s in main file)\n\t->\n", fileName);
+							getch();
+						}
+
 						xN2D = imageVersComplexe(fileName, &imageHeight, &imageWidth);
 						dimensions = 2;
 						outPutWidth = imageWidth;

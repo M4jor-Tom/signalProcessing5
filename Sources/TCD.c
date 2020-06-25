@@ -51,6 +51,7 @@ float *TCD(float *xN, int taille, int inverse)
 			printf("<TCD> Error: biggestSmallerBits bugged\n");
 		
 		int i;
+		if(XP != NULL && XI != NULL)
 		for(i = 0; i < taille; i++)
 			if(i < taille / 2)
 				X[i] = XP[i];

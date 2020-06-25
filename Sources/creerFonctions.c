@@ -12,6 +12,7 @@
 
 #include "creerFonctions.h"
 #include "image.h"
+#include "signal.h"
 
 
 int signalCarre(double x, int max)
@@ -46,7 +47,7 @@ trace valeursFonction(int fonction, double frequence, int nbPeriodes)
 	trace fonctionGraph;
 	
 	fonctionGraph.nbValeurs = nbPeriodes * (double)PIXELS_PAR_UNITES / frequence;
-	fonctionGraph.valeurs = (double *)safeMalloc(sizeof(double) * fonctionGraph.nbValeurs);
+	fonctionGraph.valeurs = (double *)safeMalloc(sizeof(double) * fonctionGraph.nbValeurs, "");
 	
 	fonctionGraph.vMin = 0.0;
 	fonctionGraph.vMax = fonctionGraph.vMin;
@@ -87,7 +88,7 @@ trace *valeursMat(int fonction, double frequence, int nbPeriodes)
 {
 	trace
 		first = valeursFonction(fonction, frequence, nbPeriodes),
-		*ret = (trace *)safeMalloc(sizeof(trace) * first.nbValeurs);
+		*ret = (trace *)safeMalloc(sizeof(trace) * first.nbValeurs, "");
 	
 	int i;
 	for(i = 0; i < first.nbValeurs; i++)

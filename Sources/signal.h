@@ -30,7 +30,7 @@ Complexe produit2(Complexe a, Complexe b);
 
 void printMat(Complexe** mat, unsigned int H, unsigned int L);
 
-Complexe **produitMat(Complexe **a, unsigned int Ha, unsigned int La, Complexe **b, unsigned int Hb, unsigned int Lb);
+Complexe** produitMat(Complexe** a, unsigned int Ha, unsigned int La, Complexe** b, unsigned int Hb, unsigned int Lb, unsigned short int diagonnale);
 
 Complexe W(float kn, int N, int inverse);
 

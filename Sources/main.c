@@ -593,9 +593,9 @@ int main()
 
 						if(xN2D != NULL)
 						{
-							for (i = 0; i < outPutWidth; i++)
+							for (i = 0; i < outPutHeight; i++)
 								free(xN2D[i]);
-							free(xN2D);
+							//free(xN2D);
 						}
 					}
 

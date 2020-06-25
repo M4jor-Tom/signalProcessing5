@@ -138,7 +138,7 @@ void printMat(Complexe **mat, unsigned int H, unsigned int L)
 	}
 }
 
-Complexe **produitMat(Complexe **a, unsigned int Ha, unsigned int La, Complexe **b, unsigned int Hb, unsigned int Lb)
+Complexe **produitMat(Complexe **a, unsigned int Ha, unsigned int La, Complexe **b, unsigned int Hb, unsigned int Lb, unsigned short int diagonnale)
 {
 	int H, L, prodLH;
 	Complexe **ret = NULL;
@@ -168,35 +168,25 @@ Complexe **produitMat(Complexe **a, unsigned int Ha, unsigned int La, Complexe *
 					.reel = 0.0,
 					.imaginaire = 0.0
 				};
-				for(prodLH = 0; prodLH < Hb && prodLH < La; prodLH++)
+				if(diagonnale == 0)
+					for(prodLH = 0; prodLH < Hb && prodLH < La; prodLH++)
+					{
+						somme =
+							somme2(
+								somme,
+								produit2(
+									a[H][prodLH],
+									b[prodLH][L]
+								)
+							);
+					}
+				else if ((diagonnale == 1 || diagonnale == 2) && H == L)
 				{
 					somme =
-						somme2(
-							somme,
-							produit2(
-								a[H][prodLH],
-								b[prodLH][L]
-							)
+						produit2(
+							a[H][L],
+							b[H][L]
 						);
-					/*if (Lb != Ha)
-					{
-						printf("\nprod: ");
-						printComplexe(
-								a[H][prodLH]
-						);
-						printf(" X ");
-						printComplexe(
-								b[prodLH][L]
-						);
-						printf(" = ");
-						printComplexe(
-							produit2(
-								a[H][prodLH],
-								b[prodLH][L]
-							)
-						);
-						getch();
-					}*/
 				}
 				ret[H][L] = somme;
 			}
@@ -360,13 +350,13 @@ Complexe **XPXI_vers_XLXH(Complexe *XP, Complexe *XI, int N, int inverse)
 	
 	//Calcul préliminaire des matrices
 	//printf("\n<XPXI_vers_XLXH> PRODUITMAT1 (%d)\n", tailleDN);
-	TnDemiParxp = produitMat(TnDemi, tailleDN, tailleDN, xpMat, tailleDN, 1);
+	TnDemiParxp = produitMat(TnDemi, tailleDN, tailleDN, xpMat, tailleDN, 1, 0);
 
 	//printf("<XPXI_vers_XLXH> PRODUITMAT2 (%d)\n", tailleDN);
-	Complexe **DnParTnDemi = produitMat(DnMat, tailleDN, tailleDN, TnDemi, tailleDN, tailleDN);
+	Complexe **DnParTnDemi = produitMat(DnMat, tailleDN, tailleDN, TnDemi, tailleDN, tailleDN, 0);
 
 	//printf("<XPXI_vers_XLXH> PRODUITMAT3 (%d)\n", tailleDN);
-	Complexe **DnParTnDemiParxi = produitMat(DnParTnDemi, tailleDN, tailleDN, xiMat, tailleDN, 1);
+	Complexe **DnParTnDemiParxi = produitMat(DnParTnDemi, tailleDN, tailleDN, xiMat, tailleDN, 1, 0);
 
 	//Calcul de XL et XH
 	for(k = 0; k < tailleDN; k++)

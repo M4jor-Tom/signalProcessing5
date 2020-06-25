@@ -78,7 +78,7 @@ trace valeursFonction(int fonction, double frequence, int nbPeriodes)
 	
 	minMax(&fonctionGraph);
 	
-	printf("<valeursFonction>\n\tnbValeurs: %d\n\tvMin: %.2lf\n\tvMax: %.2lf\n", fonctionGraph.nbValeurs, fonctionGraph.vMin, fonctionGraph.vMax);
+	//printf("<valeursFonction>\n\tnbValeurs: %d\n\tvMin: %.2lf\n\tvMax: %.2lf\n", fonctionGraph.nbValeurs, fonctionGraph.vMin, fonctionGraph.vMax);
 	
 	return fonctionGraph;
 }

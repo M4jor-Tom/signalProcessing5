@@ -18,31 +18,16 @@ double distance(double xDelta, double yDelta)
 
 Image* zeroPadGrid(Image* input)
 {
-	unsigned int y, x, factor = 2;
+	unsigned int iY, iX, y, x, factor = 2;
 	Image* output = alloueImage(biggestSmallerBits(input->largeur) * factor, biggestSmallerBits(input->hauteur) * factor);
 
-	for(y = 0; y < output -> hauteur; y++)
-		for (x = 0; x < output->largeur; x++)
+	for(y = 0, iY = 0; y < output -> hauteur; iY++, y = y + factor)
+		for (x = 0, iX = 0; x < output->largeur; iX++, x = x + factor)
 		{
-			if(x && y)
-			{
-				if(factor % y == 0 && factor % x == 0)
-					tracePoint(output, y, x, "noir", 0);
-				else
-				{
-					output->rouge[y][x] = input->rouge[y / factor][x / factor];
-					output->vert[y][x] = input->vert[y / factor][x / factor];
-					output->bleu[y][x] = input->bleu[y / factor][x / factor];
-					output->gris[y][x] = input->gris[y / factor][x / factor];
-				}
-			}
-			else
-			{
-				output->rouge[y][x] = input->rouge[y / factor][x / factor];
-				output->vert[y][x] = input->vert[y / factor][x / factor];
-				output->bleu[y][x] = input->bleu[y / factor][x / factor];
-				output->gris[y][x] = input->gris[y / factor][x / factor];
-			}
+			output->rouge[y][x] = input->rouge[iY][iX];
+			output->vert[y][x] = input->vert[iY][iX];
+			output->bleu[y][x] = input->bleu[iY][iX];
+			output->gris[y][x] = input->gris[iY][iX];
 		}
 
 	return output;

@@ -48,7 +48,7 @@ Complexe **FFT2D(Complexe **xN, int tailleL, int tailleH, int inverse, int taill
 
 	for (i = 0; i < tailleL; i++)
 	{
-		XN[i] = FFT(xN[i], tailleH, inverse, tailleMax);
+		XN[i] = FFT(XN[i], tailleH, inverse, tailleMax);
 		#ifdef PROGRESSBAR
 			int barumsMaxCount = 50;
 			float

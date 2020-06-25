@@ -579,7 +579,7 @@ int main()
 						{
 							if (!grabParameters)
 							{
-								printf("<main> Something is going to happen, but I don't know what.\n\t- Eminem -\n\n");
+								printf("Something is about to happen, but I don't know what.\n\t- Eminem -\n\n");
 								getch();
 							}
 
@@ -593,8 +593,8 @@ int main()
 
 						if(xN2D != NULL)
 						{
-							for (i = 0; i < outPutHeight; i++)
-								free(xN2D[i]);
+							/*for (i = 0; i < outPutHeight; i++)
+								free(xN2D[i]);*/
 							//free(xN2D);
 						}
 					}
